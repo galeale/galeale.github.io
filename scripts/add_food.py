@@ -66,3 +66,11 @@ for t in data["trips"]:
 data["commute"]["eco_leg"] = dict(train=1.4, car=round(4.3 * 1.5, 2))  # Venezia Mestre - Padova, one way
 print("median kcal/km", round(kpk_all, 1))
 json.dump(data, open(sys.argv[2], "w"), separators=(",", ":"))
+
+# small summary for the homepage, so it does not load all the tracks
+net = data["commute"]["legs"] * data["commute"]["eco_leg"]["car"]
+for t in data["trips"]:
+    net += (t["eco"]["car"] if t.get("train_only") else t["eco"]["plane"]) - t.get("food_kg", 0)
+summary = dict(total_km=data["total_km"], rides=data["rides"], trips=len(data["trips"]), co2_avoided_car_plane=round(net))
+json.dump(summary, open(sys.argv[2].replace("cycling-data.json", "cycling-summary.json"), "w"), indent=1)
+print("summary", summary)

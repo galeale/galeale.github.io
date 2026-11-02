@@ -44,4 +44,22 @@ h2 { margin: 0; font-size: 28px; letter-spacing: -0.01em; text-wrap: balance; }
 .lead { margin: 0; color: var(--text-2); max-width: 68ch; }
 footer.foot { border-top: 1px solid var(--line); color: var(--text-3); font-size: 14px; }
 footer.foot .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; padding-block: 28px; }
+.page-head { padding-block: 40px 36px; display: flex; flex-direction: column; gap: 12px; }
+.page-head p.sub { margin: 0; color: var(--on-ink-2); max-width: 68ch; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--text-2); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.chart-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.courses { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.course { display: grid; grid-template-columns: minmax(0, 1fr) 190px 220px; gap: 6px 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.course .cm { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.course .cn { font-weight: 600; }
+.course .cw, .course .cr { font-size: 14px; color: var(--text-2); }
+.course .cy { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.course .yr { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.talks { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.talk { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.talk .d { font-family: var(--mono); font-size: 14px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.talk .tt { display: flex; flex-direction: column; gap: 2px; line-height: 1.4; }
+.talk .w { font-size: 14px; color: var(--text-2); }
+@media (max-width: 760px) { .course { grid-template-columns: minmax(0, 1fr); } .course .cy { justify-content: flex-start; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

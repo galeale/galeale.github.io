@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Public engagement · Alessandro Galeazzi</title>
+<meta name="description" content="Talks for the public, press coverage and policy impact of Alessandro Galeazzi's research.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.overview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 24px 48px; align-items: center; }
+.overview p { margin: 0; color: var(--text-2); }
+.overview .fig { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.overview svg { width: 100%; height: auto; display: block; }
+.eng { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; }
+.eng-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.eng-col h2 { font-size: 15px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3); margin-top: 12px; }
+.eng-col h2:first-child { margin-top: 0; }
+@media (max-width: 860px) { .overview, .eng { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<header class="band">
+  <nav class="nav" aria-label="Main">
+    <div class="wrap">
+      <a class="brand" href="./">Alessandro Galeazzi</a>
+      <ul>
+        <li><a href="./">Home</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="teaching.html">Teaching</a></li>
+        <li><a href="engagement.html" aria-current="page">Public engagement</a></li>
+        <li><a href="cycling.html">Off the desk</a></li>
+        <li><a href="./#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="wrap page-head">
+    <p class="eyebrow">Public engagement</p>
+    <h1>Research outside the lab</h1>
+    <p class="sub">Talks for the public, research in the news, and work that reached policy makers.</p>
+  </div>
+</header>
+<main class="section">
+  <div class="wrap">
+    <div class="overview">
+      <p>One dot per talk, article or report, by year. Hover a dot to see what it is.</p>
+      <div class="fig" id="fig"></div>
+    </div>
+    <div class="eng">
+      <div class="eng-col">
+        <h2>Talks for the public</h2>
+        <div class="talks" id="eng-talks"></div>
+      </div>
+      <div class="eng-col">
+        <h2>In the press</h2>
+        <div class="talks" id="eng-press"></div>
+        <h2>Policy and impact</h2>
+        <div class="talks" id="eng-policy"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <span>Department of Mathematics, University of Padova</span>
+    <span><a href="./#contact">Get in touch</a></span>
+  </div>
+</footer>
+<script src="assets/sections.js"></script>
+<script>
+fetch('data/engagement.json').then(function (r) { return r.json(); }).then(function (items) {
+  Sections.engagementTimeline(document.getElementById('fig'), items);
+  ['talks', 'press', 'policy'].forEach(function (g) { Sections.engagementList(document.getElementById('eng-' + g), items, g); });
+});
+</script>
+</body>
+</html>

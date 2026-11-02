@@ -4,10 +4,11 @@ Static site for GitHub Pages: no build step, plain HTML, CSS and JavaScript.
 
 | Page | File | Data |
 |---|---|---|
-| Research (network of papers) | `index.html`, `assets/graph.js` | `data/papers.json`, `data/citations.csv` |
+| Home: bio, network of papers, summaries, contact | `index.html`, `assets/graph.js`, `assets/sections.js` | `data/papers.json`, `data/citations.csv`, `data/teaching.json`, `data/engagement.json`, `data/cycling-summary.json`, `assets/rides-thumb.png` |
 | Publications | `publications.html` | `data/papers.json`, `data/citations.csv` |
-| Cycling heatmap and CO₂ | `cycling.html` | `data/cycling-data.json` |
-| Public engagement (on the homepage) | `index.html` | `data/engagement.json` |
+| Teaching | `teaching.html` | `data/teaching.json` |
+| Public engagement | `engagement.html` | `data/engagement.json` |
+| Off the desk (cycling heatmap and CO₂) | `cycling.html` | `data/cycling-data.json` |
 
 ## Everyday updates
 
@@ -48,7 +49,12 @@ pip install fitdecode
 python scripts/parse_tracks.py /path/to/strava_export private/tracks.pkl
 python scripts/build_cycling.py private/tracks.pkl data/cycling-data.json
 python scripts/add_food.py /path/to/strava_export/activities.csv data/cycling-data.json
+pip install numpy opencv-python pillow
+python scripts/make_thumb.py
 ```
+
+`add_food.py` also writes `data/cycling-summary.json` (the numbers on the homepage); `make_thumb.py` redraws the
+homepage heatmap image.
 
 New conference trips go in `CONF` in `scripts/build_cycling.py` (their ride names must contain "biking"), and their
 EcoPassenger figures in `ECO` in `scripts/add_food.py`.

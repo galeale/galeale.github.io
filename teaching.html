@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teaching · Alessandro Galeazzi</title>
+<meta name="description" content="Courses taught by Alessandro Galeazzi at the University of Padova, Ca’ Foscari University of Venice and PJAIT.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.overview { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 24px 48px; align-items: center; }
+.overview p { margin: 0; color: var(--text-2); }
+.overview .fig { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.overview svg { width: 100%; height: auto; display: block; }
+@media (max-width: 860px) { .overview { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<header class="band">
+  <nav class="nav" aria-label="Main">
+    <div class="wrap">
+      <a class="brand" href="./">Alessandro Galeazzi</a>
+      <ul>
+        <li><a href="./">Home</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="teaching.html" aria-current="page">Teaching</a></li>
+        <li><a href="engagement.html">Public engagement</a></li>
+        <li><a href="cycling.html">Off the desk</a></li>
+        <li><a href="./#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="wrap page-head">
+    <p class="eyebrow">Teaching</p>
+    <h1>Courses</h1>
+    <p class="sub">Programming and computer systems for computer scientists and biologists, and data science for the social world at master's and Ph.D. level.</p>
+  </div>
+</header>
+<main class="section">
+  <div class="wrap">
+    <div class="overview">
+      <p>Hours taught per academic year, by university. Coordinated courses include the whole course; for the others, my share of the lectures.</p>
+      <div class="fig" id="fig"></div>
+    </div>
+    <ul class="courses" id="courses"></ul>
+  </div>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <span>Department of Mathematics, University of Padova</span>
+    <span><a href="./#contact">Get in touch</a></span>
+  </div>
+</footer>
+<script src="assets/sections.js"></script>
+<script>
+fetch('data/teaching.json').then(function (r) { return r.json(); }).then(function (list) {
+  Sections.teachingChart(document.getElementById('fig'), list);
+  Sections.courses(document.getElementById('courses'), list);
+});
+</script>
+</body>
+</html>
