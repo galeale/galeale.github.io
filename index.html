@@ -10,17 +10,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 <style>
-.hero { padding-block: 52px 48px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 32px 56px; align-items: end; }
+.hero { padding-block: 52px 52px; display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 32px 56px; align-items: center; }
+.portrait { margin: 0; position: relative; width: 100%; max-width: 360px; justify-self: end; aspect-ratio: 5 / 6; border-radius: 20px; overflow: hidden; background: var(--ink-2); border: 1px solid var(--ink-line); }
+.portrait img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 1; }
+.portrait .initials { position: absolute; inset: 0; display: grid; place-items: center; font-size: 72px; font-weight: 700; color: var(--ink-line-2); letter-spacing: -0.02em; }
 .hero .who { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .hero h1 { font-size: clamp(36px, 5.4vw, 52px); }
 .hero .role { margin: 0; font-size: 19px; color: var(--on-ink); font-weight: 500; }
 .hero .bio { margin: 0; color: var(--on-ink-2); font-size: 17px; max-width: 66ch; }
 .hero .side { display: flex; flex-direction: column; gap: 14px; }
-.facts { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--ink-line); }
-.facts li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--ink-line); font-size: 14px; color: var(--on-ink-2); }
-.facts b { color: var(--on-ink); font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
 .links { display: flex; flex-wrap: wrap; gap: 10px; }
-@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } .portrait { justify-self: start; max-width: 240px; order: -1; } }
 
 .research { border-top: 1px solid var(--ink-line); }
 .research .wrap { padding-block: 44px 56px; display: flex; flex-direction: column; gap: 18px; }
@@ -88,7 +88,7 @@
       <a class="brand" href="./">Alessandro Galeazzi</a>
       <ul>
         <li><a href="./" aria-current="page">Home</a></li>
-        <li><a href="publications.html">Publications</a></li>
+        <li><a href="research.html">Research</a></li>
         <li><a href="teaching.html">Teaching</a></li>
         <li><a href="engagement.html">Public engagement</a></li>
         <li><a href="cycling.html">Off the desk</a></li>
@@ -100,22 +100,19 @@
     <div class="who">
       <p class="eyebrow">Computational social science</p>
       <h1>Alessandro Galeazzi</h1>
-      <p class="role">Tenure-Track Assistant Professor, Department of Mathematics, University of Padova</p>
-      <p class="bio">I study how information spreads, clusters and polarizes online. With network science and large-scale data I look at echo chambers, misinformation, the climate debate on social media, and the algorithms that decide what we see, including how to audit them from the outside. I am part of the SPRITZ Security &amp; Privacy Research Group.</p>
-      <p class="bio">Before Padova I was a postdoctoral researcher at Ca’ Foscari University of Venice and a visiting researcher at the Central European University in Vienna. I hold a Ph.D. in Information Engineering from the University of Brescia, carried out with the Center for Data Science and Complexity for Society at Sapienza University of Rome.</p>
-    </div>
-    <div class="side">
-      <ul class="facts">
-        <li>Citations (Google Scholar) <b>11.4k</b></li>
-        <li>Papers and preprints <b id="n-papers">34</b></li>
-        <li>Academic Editor <b>PLOS ONE</b></li>
-      </ul>
+      <p class="role">Tenure-Track Assistant Professor, Department of Mathematics, University of Padova · SPRITZ Security &amp; Privacy Research Group</p>
+      <p class="bio">I study how the interactions between people, content and algorithmic systems shape collective outcomes in digital societies. I read society through the digital traces it leaves behind: online debates, news, and cultural products such as music and images.</p>
+      <p class="bio">My approach is computational and quantitative, with a social science perspective. I turn digital traces into datasets and analyse them with network analysis, natural language processing, machine learning and statistical inference, to measure how opinions fragment, how algorithms change what we see, and how culture evolves. Next, I want to combine social media data with surveys, data donation and measurements of what people are actually exposed to, and to turn the results into evidence that helps regulators and platform designers.</p>
       <div class="links">
-        <a class="btn solid" href="https://scholar.google.com/citations?user=DK0tXAIAAAAJ">Google Scholar</a>
-        <a class="btn ghost" href="https://orcid.org/0000-0001-6859-0391">ORCID</a>
+        <a class="btn solid" href="https://scholar.google.com/citations?user=DK0tXAIAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
+        <a class="btn ghost" href="https://orcid.org/0000-0001-6859-0391" target="_blank" rel="noopener">ORCID</a>
         <a class="btn ghost" href="#contact">Contact</a>
       </div>
     </div>
+    <figure class="portrait">
+      <img src="assets/photo.jpg" alt="Alessandro Galeazzi" width="600" height="720" onerror="this.parentNode.classList.add('empty'); this.remove();">
+      <span class="initials" aria-hidden="true">AG</span>
+    </figure>
   </div>
   <section class="research" aria-labelledby="research-title">
     <div class="wrap">
@@ -131,9 +128,9 @@
         <span class="k" id="p-theme"></span>
         <div class="body"><span class="t" id="p-title"></span><span class="a" id="p-authors"></span></div>
         <span class="m" id="p-meta"></span>
-        <a id="p-link" href="publications.html">Find it →</a>
+        <a id="p-link" href="research.html" target="_blank" rel="noopener">Find it →</a>
       </div>
-      <a href="publications.html" style="font-weight: 600; text-decoration: none">All publications →</a>
+      <a href="research.html" style="font-weight: 600; text-decoration: none">All papers and preprints →</a>
     </div>
   </section>
 </header>
@@ -173,7 +170,7 @@
 
   <section class="section" id="off-the-desk">
     <div class="wrap">
-      <a class="summary" href="cycling.html">
+      <a class="summary" href="cycling.html" aria-label="Off the desk: cycling map and CO₂ ledger">
         <div class="txt">
           <h2>Off the desk</h2>
           <p>I ride almost every day. The bike is how I get to work in Padova, how I train, and, when the distance makes sense, how I get to conferences. I love long days in the saddle: mountain passes in the Dolomites, ultra-distance events and multi-day trips across Europe.</p>
@@ -250,7 +247,6 @@
     document.getElementById('b-trips').textContent = d.trips;
     document.getElementById('b-co2').textContent = fmt(d.co2_avoided_car_plane);
   }).catch(function () {});
-  fetch('data/papers.json').then(function (r) { return r.json(); }).then(function (d) { document.getElementById('n-papers').textContent = d.papers.length; });
   document.getElementById('mail-copy').addEventListener('click', function () {
     var b = this, el = document.getElementById('mail-addr');
     var sel = function () { var r = document.createRange(); r.selectNodeContents(el); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };

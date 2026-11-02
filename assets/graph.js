@@ -37,7 +37,7 @@
       A.vx += dx * k; A.vy += dy * k; B.vx -= dx * k; B.vy -= dy * k;
     });
     for (i = 0; i < N.length; i++) {
-      A = N[i]; var t = T[P[i].theme];
+      A = N[i]; var t = A.anchor || T[P[i].theme];
       A.vx += (t.ax * VW - A.x) * 0.035 * a; A.vy += (t.ay * VH - A.y) * 0.035 * a;
       if (A.fx !== null) { A.x = A.fx; A.y = A.fy; A.vx = A.vy = 0; continue; }
       A.vx *= 0.6; A.vy *= 0.6; A.x += A.vx; A.y += A.vy;
@@ -116,7 +116,7 @@
     svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VW * aspect);
     var gE = el('g', {}, svg), gL = el('g', {}, svg), gN = el('g', {}, svg);
     els.edges = E.map(function () { return el('line', { 'stroke-linecap': 'round' }, gE); });
-    els.labels = Object.keys(T).map(function (id) {
+    els.labels = Object.keys(T).filter(function (id) { return id !== 'other'; }).map(function (id) {
       var t = el('text', { 'class': 'label', fill: T[id].color, 'text-anchor': 'middle' }, gL);
       t.textContent = T[id].label; return { id: id, el: t };
     });
@@ -190,7 +190,12 @@
     sel = P.reduce(function (b, p, i) { return (p.c || 0) > (P[b].c || 0) ? i : b; }, 0);
     var r = graph.getBoundingClientRect(); if (r.width) aspect = r.height / r.width;
     var seed = 11, rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
-    N = P.map(function (p) { var t = T[p.theme]; return { x: t.ax * VW + (rnd() - 0.5) * 120, y: t.ay * VW * aspect + (rnd() - 0.5) * 90, vx: 0, vy: 0, r: radius(p), fx: null, fy: null }; });
+    // 'Other' papers are single nodes: give each its own spot in the empty parts of the canvas
+    var LONE = [{ ax: 0.93, ay: 0.12 }, { ax: 0.07, ay: 0.14 }, { ax: 0.80, ay: 0.93 }, { ax: 0.47, ay: 0.08 }, { ax: 0.04, ay: 0.92 }], lone = 0;
+    N = P.map(function (p) {
+      var t = p.theme === 'other' ? LONE[lone++ % LONE.length] : T[p.theme];
+      return { x: t.ax * VW + (rnd() - 0.5) * 120, y: t.ay * VW * aspect + (rnd() - 0.5) * 90, vx: 0, vy: 0, r: radius(p), fx: null, fy: null, anchor: p.theme === 'other' ? t : null };
+    });
     for (var i = 0; i < 220; i++) tick(1 - i / 260);
     build(); styleAll(); render();
     if (window.ResizeObserver) new ResizeObserver(resize).observe(graph);

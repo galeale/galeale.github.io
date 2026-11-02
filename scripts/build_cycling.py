@@ -72,7 +72,7 @@ for a in A:
     a["cat"] = "other"
     k = conf_of(a)
     if k:
-        a["cat"] = "conference"; conf_legs[k].append(a)
+        a["cat"] = "conference"; a["conf"] = k; conf_legs[k].append(a)
     elif (hav(s, HOME) < 2 and hav(e, WORK) < 1) or (hav(s, WORK) < 1 and hav(e, HOME) < 2):
         a["cat"] = "commute"
         commute_legs.append(dict(date=a["dt"].date().isoformat(), km=round(a["km"], 1), legs=1))
@@ -147,9 +147,17 @@ for a in A:
         simp = rdp(xy, 12.0)
         if len(simp) < 2: continue
         npts += len(simp)
-        tracks[a["cat"]].append(encode([(p[2], p[3]) for p in simp]))
+        enc = encode([(p[2], p[3]) for p in simp])
+        tracks[a["cat"]].append({"trip": a["conf"], "p": enc} if a["cat"] == "conference" else enc)
 
 # --- trip table
+# where each day ended (checked by hand against the GPS end points; edit freely)
+STAGE_NAMES = {
+    "netsci2023": ["Vienna"],
+    "cs2ita2025": ["Trento", "Verona"],
+    "netsci2025": ["Ponte di Legno", "Davos", "Strasbourg", "Saarlouis", "Maastricht"],
+    "c72h2026": ["near Bergamo", "Andermatt", "Basel", "near Chaumont", "Paris", "Dieppe (ferry to Newhaven)", "Brighton", "London"],
+}
 trips = []
 for k, c in CONF.items():
     legs = sorted(conf_legs[k], key=lambda a: a["dt"])
@@ -161,7 +169,10 @@ for k, c in CONF.items():
         straight = hav(legs[0]["pts"][0], legs[-1]["pts"][-1])
     trips.append(dict(id=k, label=c["label"], event=c["event"], start=legs[0]["dt"].date().isoformat(),
                       end=legs[-1]["dt"].date().isoformat(), days=len({a["dt"].date() for a in legs}),
-                      km=round(out_km), train_only=bool(c.get("train_only"))))
+                      km=round(out_km), train_only=bool(c.get("train_only")),
+                      stages=[dict(date=a["dt"].date().isoformat(), km=round(a["km"]), to=STAGE_NAMES[k][i],
+                                   at=[round(a["pts"][-1][0], 2), round(a["pts"][-1][1], 2)])
+                              for i, a in enumerate(legs)]))
 
 total_km = sum(a["km"] for a in A)
 years = sorted({a["dt"].year for a in A})

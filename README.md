@@ -5,12 +5,26 @@ Static site for GitHub Pages: no build step, plain HTML, CSS and JavaScript.
 | Page | File | Data |
 |---|---|---|
 | Home: bio, network of papers, summaries, contact | `index.html`, `assets/graph.js`, `assets/sections.js` | `data/papers.json`, `data/citations.csv`, `data/teaching.json`, `data/engagement.json`, `data/cycling-summary.json`, `assets/rides-thumb.png` |
-| Publications | `publications.html` | `data/papers.json`, `data/citations.csv` |
+| Research (summary + all papers) | `research.html` (`publications.html` redirects here) | `data/papers.json`, `data/citations.csv` |
 | Teaching | `teaching.html` | `data/teaching.json` |
 | Public engagement | `engagement.html` | `data/engagement.json` |
-| Off the desk (cycling heatmap and CO₂) | `cycling.html` | `data/cycling-data.json` |
+| Off the desk (cycling heatmap and CO₂) | `cycling.html` | `data/cycling-data.json`, `data/borders.json`, `data/trip-photos.json` |
 
 ## Everyday updates
+
+**Your photo.** Save it as `assets/photo.jpg` (portrait, about 600×720 px). Until the file exists the homepage shows your initials.
+
+**Photos of the rides to conferences.** Put the images in `assets/trips/` and list them in `data/trip-photos.json`, by trip:
+
+```json
+{
+  "c72h2026": [{"src": "assets/trips/c72h2026/andermatt.jpg", "caption": "Day 2, Andermatt"}],
+  "netsci2025": [], "netsci2023": [], "cs2ita2025": []
+}
+```
+
+They appear in the panel that opens when someone clicks a green route on the map. The names of the daily stages are in
+`STAGE_NAMES` in `scripts/build_cycling.py`.
 
 **Citations.** Edit `data/citations.csv` (one row per paper: `key,citations,title`). Leave the number empty if you don't
 want to show one. Node sizes and the publications page update on the next page load.
@@ -52,6 +66,9 @@ python scripts/add_food.py /path/to/strava_export/activities.csv data/cycling-da
 pip install numpy opencv-python pillow
 python scripts/make_thumb.py
 ```
+
+Country borders come from Natural Earth (`npm install world-atlas@2.0.2 topojson-client@3.1.0`, then
+`node scripts/make_borders.js data/borders.json`); they only need rebuilding to change the map area.
 
 `add_food.py` also writes `data/cycling-summary.json` (the numbers on the homepage); `make_thumb.py` redraws the
 homepage heatmap image.

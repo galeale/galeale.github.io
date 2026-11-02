@@ -21,7 +21,7 @@
   --accent: #93C5FD;
   --commute: #FFB547;
   --conf: #34D399;
-  --other: #6C8CFF;
+  --other: #8AA4FF;
   --m-bike: #169C6E;
   --m-car: #C7851F;
   --m-train: #4A86E0;
@@ -146,6 +146,23 @@ td .sub { display: block; color: var(--muted); font-size: 13px; font-weight: 400
 .trip .ev { font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--conf); }
 .trip .rt { font-size: 18px; font-weight: 600; line-height: 1.3; }
 .trip .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tripcard { margin-top: 14px; border: 1px solid var(--line-strong); border-radius: 14px; padding: 20px 22px; background: var(--panel); display: flex; flex-direction: column; gap: 14px; }
+.tc-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.tc-head h3 { margin: 2px 0 4px; font-size: 20px; }
+.tc-head .ev { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--conf); }
+.tc-head .facts { margin: 0; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.tc-close { font: inherit; font-size: 22px; line-height: 1; color: var(--fg); background: transparent; border: 1px solid var(--line-strong); border-radius: 10px; width: 44px; height: 44px; cursor: pointer; flex: none; }
+.stages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; counter-reset: st; }
+.stages li { border-left: 2px solid var(--conf); padding: 4px 0 4px 12px; display: flex; flex-direction: column; gap: 2px; }
+.stages .sd { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.stages .sn { font-weight: 600; }
+.stages .sk { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.photos { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+.photos figure { margin: 0; flex: 0 0 240px; display: flex; flex-direction: column; gap: 6px; }
+.photos img { width: 240px; height: 160px; object-fit: cover; border-radius: 10px; display: block; background: var(--line); }
+.photos figcaption { font-size: 13px; color: var(--muted); }
+.trip { cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.trip:hover, .trip[aria-pressed="true"] { border-color: var(--conf); }
 footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
 footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -160,7 +177,7 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
       <a class="brand" href="./">Alessandro Galeazzi</a>
       <ul>
         <li><a href="./">Home</a></li>
-        <li><a href="publications.html">Publications</a></li>
+        <li><a href="research.html">Research</a></li>
         <li><a href="teaching.html">Teaching</a></li>
         <li><a href="engagement.html">Public engagement</a></li>
         <li><a href="cycling.html" aria-current="page">Off the desk</a></li>
@@ -206,7 +223,19 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
         </div>
         <p class="mapnote" id="scale"></p>
       </div>
-      <p class="privacy">For privacy, the first and last 2–3 km of every ride are cut and everything within 2.5 km of home is hidden. The map shows routes, not where they start.</p>
+      <section class="tripcard" id="tripcard" hidden aria-live="polite">
+        <div class="tc-head">
+          <div>
+            <p class="ev" id="tc-event"></p>
+            <h3 id="tc-route"></h3>
+            <p class="facts" id="tc-facts"></p>
+          </div>
+          <button type="button" class="tc-close" id="tc-close" aria-label="Close the trip">×</button>
+        </div>
+        <ol class="stages" id="tc-stages"></ol>
+        <div class="photos" id="tc-photos" hidden></div>
+      </section>
+      <p class="privacy">Click a green route, or a trip below, to see its daily stages. For privacy, the first and last 2–3 km of every ride are cut and everything within 2.5 km of home is hidden.</p>
     </div>
   </section>
 
@@ -414,6 +443,7 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
 
   var map = document.getElementById('map'), cv = document.getElementById('cv'), ctx = cv.getContext('2d');
   var layers = { commute: [], conference: [], other: [] };
+  var GEO = { borders: [], coast: [] }, TRIPS = {}, PHOTOS = {};
   var view = { cx: 0, cy: 0, s: 0.001 }; // s: CSS px per metre
   var W = 0, H = 0, dpr = 1, queued = false;
   var css = getComputedStyle(document.documentElement);
@@ -449,31 +479,68 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
     var zoomed = s * 1000; // px per km
     var lw = Math.max(1, Math.min(2.4, 0.9 + zoomed / 40));
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-    [['other', 0.20], ['commute', 0.45], ['conference', 0.85]].forEach(function (L) {
+    function path(t) {
+      var b = t.bb;
+      if (b[2] < vx0 || b[0] > vx1 || b[3] < vy0 || b[1] > vy1) return false;
+      var p = t.p, minStep = 0.8 / s, lx = p[0], ly = p[1];
+      ctx.beginPath(); ctx.moveTo(ox + lx * s, oy - ly * s);
+      for (var i = 2; i < p.length; i += 2) {
+        if (Math.abs(p[i] - lx) < minStep && Math.abs(p[i + 1] - ly) < minStep && i < p.length - 2) continue;
+        lx = p[i]; ly = p[i + 1];
+        ctx.lineTo(ox + lx * s, oy - ly * s);
+      }
+      return true;
+    }
+    // countries: coastlines solid, borders dashed
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.30)'; ctx.setLineDash([]);
+    GEO.coast.forEach(function (t) { if (path(t)) ctx.stroke(); });
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.30)'; ctx.setLineDash([4, 4]);
+    GEO.borders.forEach(function (t) { if (path(t)) ctx.stroke(); });
+    ctx.setLineDash([]);
+    [['other', 0.40], ['commute', 0.55], ['conference', 0.85]].forEach(function (L) {
       if (!state.layers[L[0]]) return;
       // background rides glow additively; commutes and conference rides sit on top in their own colour
       ctx.globalCompositeOperation = L[0] === 'other' ? 'lighter' : 'source-over';
       ctx.strokeStyle = rgba(COL[L[0]], L[1]);
       ctx.lineWidth = L[0] === 'conference' ? lw + 0.6 : lw;
       layers[L[0]].forEach(function (t) {
-        var b = t.bb;
-        if (b[2] < vx0 || b[0] > vx1 || b[3] < vy0 || b[1] > vy1) return;
-        var p = t.p, minStep = 0.8 / s, lx = p[0], ly = p[1];
-        ctx.beginPath(); ctx.moveTo(ox + lx * s, oy - ly * s);
-        for (var i = 2; i < p.length; i += 2) {
-          if (Math.abs(p[i] - lx) < minStep && Math.abs(p[i + 1] - ly) < minStep && i < p.length - 2) continue;
-          lx = p[i]; ly = p[i + 1];
-          ctx.lineTo(ox + lx * s, oy - ly * s);
+        if (L[0] === 'conference' && state.trip) {
+          var on = t.trip === state.trip;
+          ctx.strokeStyle = rgba(COL.conference, on ? 1 : 0.35);
+          ctx.lineWidth = on ? lw + 2 : lw + 0.4;
         }
-        ctx.stroke();
+        if (path(t)) ctx.stroke();
       });
     });
+    // daily stages of the rides to conferences
+    if (state.layers.conference) {
+      Object.keys(TRIPS).forEach(function (id) {
+        var t = TRIPS[id], sel = state.trip === id, showLabel = sel || zoomed > 1.6;
+        t._xy.forEach(function (m, i) {
+          var x = ox + m[0] * s, y = oy - m[1] * s;
+          if (x < -20 || y < -20 || x > W + 20 || y > H + 20) return;
+          ctx.beginPath(); ctx.arc(x, y, sel ? 6 : 4, 0, 6.2832);
+          ctx.fillStyle = '#070C17'; ctx.fill();
+          ctx.lineWidth = 2; ctx.strokeStyle = rgba(COL.conference, sel || !state.trip ? 1 : 0.4); ctx.stroke();
+          if (showLabel && !(state.trip && !sel)) {
+            ctx.font = (sel ? '600 ' : '500 ') + '12px ' + "'IBM Plex Sans', system-ui, sans-serif";
+            ctx.textBaseline = 'middle';
+            var label = (t.stages.length > 1 ? (i + 1) + ' · ' : '') + t.stages[i].to;
+            ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(7, 12, 23, 0.9)'; ctx.strokeText(label, x + 9, y);
+            ctx.fillStyle = '#E8EDF6'; ctx.fillText(label, x + 9, y);
+          }
+        });
+      });
+    }
     ctx.globalCompositeOperation = 'source-over';
     ctx.font = '500 12px ' + "'IBM Plex Mono', ui-monospace, monospace";
     ctx.textBaseline = 'middle';
+    var marks = state.trip && state.layers.conference ? TRIPS[state.trip]._xy.map(function (m) { return [ox + m[0] * s, oy - m[1] * s]; }) : [];
     PLACES.forEach(function (pl) {
       var x = ox + pl.x * s, y = oy - pl.y * s;
       if (x < 8 || y < 8 || x > W - 90 || y > H - 30) return;
+      if (marks.some(function (m) { return Math.abs(m[0] - x) < 60 && Math.abs(m[1] - y) < 16; })) return;
       ctx.fillStyle = MUTED; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 6.2832); ctx.fill();
       ctx.fillStyle = 'rgba(226, 232, 240, 0.85)'; ctx.fillText(pl.n, x + 7, y);
     });
@@ -507,15 +574,69 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
     var r = map.getBoundingClientRect();
     zoomAt(Math.exp(-e.deltaY * 0.0018), e.clientX - r.left, e.clientY - r.top);
   }, { passive: false });
-  var ptrs = new Map(), pinch = null;
+  function nearestTrip(px, py) {
+    if (!state.layers.conference) return null;
+    var s = view.s, ox = W / 2 - view.cx * s, oy = H / 2 + view.cy * s, best = null, bd = 12;
+    layers.conference.forEach(function (t) {
+      var p = t.p;
+      for (var i = 2; i < p.length; i += 2) {
+        var x1 = ox + p[i - 2] * s, y1 = oy - p[i - 1] * s, x2 = ox + p[i] * s, y2 = oy - p[i + 1] * s;
+        var dx = x2 - x1, dy = y2 - y1, L = dx * dx + dy * dy, u = L ? Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / L)) : 0;
+        var d = Math.hypot(px - (x1 + u * dx), py - (y1 + u * dy));
+        if (d < bd) { bd = d; best = t.trip; }
+      }
+    });
+    return best;
+  }
+  function selectTrip(id, fit) {
+    state.trip = id;
+    document.querySelectorAll('.trip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.trip === id)); });
+    var card = document.getElementById('tripcard');
+    if (!id) { card.hidden = true; draw(); return; }
+    var t = TRIPS[id];
+    document.getElementById('tc-event').textContent = t.event;
+    document.getElementById('tc-route').textContent = t.label;
+    document.getElementById('tc-facts').textContent = fmt(t.km) + ' km · ' + t.days + (t.days === 1 ? ' day' : ' days') + ' · ' + (t.start === t.end ? t.start : t.start + ' → ' + t.end);
+    var ol = document.getElementById('tc-stages'); ol.textContent = '';
+    var from = 'Mestre';
+    t.stages.forEach(function (st, i) {
+      var li = el('li');
+      li.appendChild(el('span', 'sd', 'Stage ' + (i + 1) + ' · ' + new Date(st.date + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })));
+      li.appendChild(el('span', 'sn', from.replace(/ \(.*\)$/, '') + ' → ' + st.to));
+      li.appendChild(el('span', 'sk', fmt(st.km) + ' km'));
+      ol.appendChild(li);
+      var ferry = st.to.match(/ferry to ([^)]+)/); from = ferry ? ferry[1] : st.to;
+    });
+    var ph = document.getElementById('tc-photos'); ph.textContent = '';
+    var list = PHOTOS[id] || [];
+    list.forEach(function (p) {
+      var f = el('figure'), im = el('img'); im.src = p.src; im.alt = p.caption || ''; im.loading = 'lazy';
+      f.appendChild(im); if (p.caption) f.appendChild(el('figcaption', '', p.caption)); ph.appendChild(f);
+    });
+    ph.hidden = !list.length;
+    card.hidden = false;
+    if (fit) {
+      var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      layers.conference.forEach(function (tr) { if (tr.trip !== id) return; x0 = Math.min(x0, tr.bb[0]); y0 = Math.min(y0, tr.bb[1]); x1 = Math.max(x1, tr.bb[2]); y1 = Math.max(y1, tr.bb[3]); });
+      if (isFinite(x0)) { var px = (x1 - x0) * 0.08, py = (y1 - y0) * 0.08; fitBox(x0 - px, y0 - py, x1 + px, y1 + py); }
+      ['home', 'europe', 'all'].forEach(function (k) { document.getElementById('v-' + k).setAttribute('aria-pressed', 'false'); });
+    }
+    draw();
+  }
+  document.getElementById('tc-close').addEventListener('click', function () { selectTrip(null); });
+  var ptrs = new Map(), pinch = null, down = null;
   cv.addEventListener('pointerdown', function (e) {
     cv.setPointerCapture(e.pointerId);
     ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    down = ptrs.size === 1 ? { x: e.clientX, y: e.clientY } : null;
     map.classList.add('dragging');
     if (ptrs.size === 2) { var a = Array.from(ptrs.values()); pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); }
   });
   cv.addEventListener('pointermove', function (e) {
-    if (!ptrs.has(e.pointerId)) return;
+    if (!ptrs.has(e.pointerId)) {
+      if (e.pointerType === 'mouse') { var r0 = map.getBoundingClientRect(); cv.style.cursor = nearestTrip(e.clientX - r0.left, e.clientY - r0.top) ? 'pointer' : ''; }
+      return;
+    }
     var prev = ptrs.get(e.pointerId), cur = { x: e.clientX, y: e.clientY };
     ptrs.set(e.pointerId, cur);
     if (ptrs.size === 1) {
@@ -525,16 +646,32 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
       zoomAt(d / pinch, (a[0].x + a[1].x) / 2 - r.left, (a[0].y + a[1].y) / 2 - r.top); pinch = d;
     }
   });
-  function endPtr(e) { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) map.classList.remove('dragging'); }
+  function endPtr(e) {
+    if (e.type === 'pointerup' && down && ptrs.size === 1 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 5) {
+      var r = map.getBoundingClientRect(), hit = nearestTrip(e.clientX - r.left, e.clientY - r.top);
+      if (hit) selectTrip(hit, false);
+    }
+    ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) { map.classList.remove('dragging'); down = null; }
+  }
   cv.addEventListener('pointerup', endPtr); cv.addEventListener('pointercancel', endPtr);
   cv.addEventListener('dblclick', function (e) { var r = map.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { resize(); }).observe(map);
   resize(); fitLatLon(VIEWS.home);
 
   /* ---------- data ---------- */
+  fetch('data/borders.json').then(function (r) { return r.json(); }).then(function (g) {
+    GEO.borders = g.borders.map(decode); GEO.coast = g.coast.map(decode); draw();
+  }).catch(function () {});
+  fetch('data/trip-photos.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (p) { PHOTOS = p || {}; }).catch(function () {});
   fetch('data/cycling-data.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
     D = d;
-    Object.keys(layers).forEach(function (k) { layers[k] = d.tracks[k].map(decode); });
+    Object.keys(layers).forEach(function (k) {
+      layers[k] = d.tracks[k].map(function (o) {
+        if (typeof o === 'string') return decode(o);
+        var t = decode(o.p); t.trip = o.trip; return t;
+      });
+    });
+    TRIPS = {}; d.trips.forEach(function (t) { TRIPS[t.id] = t; t._xy = t.stages.map(function (st) { return merc(st.at[0], st.at[1]); }); });
     var confKm = d.trips.reduce(function (a, t) { return a + t.km; }, 0);
     document.getElementById('s-km').textContent = fmt(d.total_km);
     document.getElementById('s-rides').textContent = fmt(d.rides);
@@ -546,8 +683,9 @@ footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24
     document.getElementById('gen').textContent = 'Rides from ' + d.period[0].slice(0, 7) + ' to ' + d.period[1].slice(0, 7) + ' · updated ' + d.generated;
     var box = document.getElementById('trips');
     d.trips.forEach(function (t) {
-      var el = document.createElement('article'); el.className = 'trip';
-      var ev = document.createElement('span'); ev.className = 'ev'; ev.textContent = t.event;
+      var el = document.createElement('button'); el.type = 'button'; el.className = 'trip'; el.dataset.trip = t.id; el.setAttribute('aria-pressed', 'false');
+      el.addEventListener('click', function () { selectTrip(t.id, true); map.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      var ev = document.createElement('span'); ev.className = 'ev'; ev.textContent = t.event + ' · ' + t.stages.length + (t.stages.length === 1 ? ' stage' : ' stages');
       var rt = document.createElement('span'); rt.className = 'rt'; rt.textContent = t.label;
       var fx = document.createElement('div'); fx.className = 'facts';
       [fmt(t.km) + ' km', t.days + (t.days === 1 ? ' day' : ' days'), t.start === t.end ? t.start : t.start + ' → ' + t.end.slice(5)].forEach(function (v) { var s = document.createElement('span'); s.textContent = v; fx.appendChild(s); });

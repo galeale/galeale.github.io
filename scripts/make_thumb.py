@@ -38,7 +38,7 @@ layers = {}
 for name in ("other", "commute", "conference"):
     acc = np.zeros((H * SS, W * SS), np.float32)
     for st in D["tracks"][name]:
-        p = decode(st)
+        p = decode(st["p"] if isinstance(st, dict) else st)
         layer = np.zeros_like(acc)
         cv2.polylines(layer, [p.reshape(-1, 1, 2)], False, 1.0, thickness=2 * SS if name != "other" else SS + 1, lineType=cv2.LINE_AA)
         acc += layer
@@ -49,7 +49,7 @@ img = np.tile(bg, (H, W, 1))
 def add(layer, rgb, gain, cap=1.0):
     a = np.clip(np.log1p(layer * gain) / np.log1p(gain * 6), 0, cap)[..., None]
     return a, np.array(rgb, np.float32)
-for name, rgb, gain in (("other", (108, 140, 255), 3.0), ("commute", (255, 181, 71), 4.0), ("conference", (52, 211, 153), 4.0)):
+for name, rgb, gain in (("other", (138, 164, 255), 8.0), ("commute", (255, 181, 71), 4.0), ("conference", (52, 211, 153), 4.0)):
     a, c = add(layers[name], rgb, gain)
     img = img * (1 - a) + c * a
 Image.fromarray(np.clip(img, 0, 255).astype(np.uint8)).save(os.path.join(ROOT, "assets", "rides-thumb.png"), optimize=True)
