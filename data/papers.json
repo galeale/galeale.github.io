@@ -1,0 +1,917 @@
+{
+"themes": [
+{
+"id": "polar",
+"label": "Polarization & echo chambers",
+"color": "#60A5FA",
+"ax": 0.3,
+"ay": 0.34
+},
+{
+"id": "mis",
+"label": "Misinformation & news",
+"color": "#FB923C",
+"ax": 0.64,
+"ay": 0.32
+},
+{
+"id": "algo",
+"label": "Algorithms & online behaviour",
+"color": "#A78BFA",
+"ax": 0.56,
+"ay": 0.74
+},
+{
+"id": "clim",
+"label": "Climate discourse",
+"color": "#4ADE80",
+"ax": 0.11,
+"ay": 0.66
+},
+{
+"id": "mob",
+"label": "Human mobility",
+"color": "#22D3EE",
+"ax": 0.86,
+"ay": 0.7
+},
+{
+"id": "cult",
+"label": "Culture & language complexity",
+"color": "#F472B6",
+"ax": 0.3,
+"ay": 0.8
+},
+{
+"id": "other",
+"label": "Other",
+"color": "#94A3B8",
+"ax": 0.9,
+"ay": 0.2
+}
+],
+"papers": [
+{
+"key": "etta2022comparing",
+"t": "Comparing the impact of social media regulations on news consumption",
+"au": [
+"G. Etta",
+"M. Cinelli",
+"A. Galeazzi",
+"C. M. Valensise",
+"W. Quattrociocchi",
+"M. Conti"
+],
+"etal": false,
+"v": "IEEE TCSS",
+"yr": 2022,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "galeazzi2021human",
+"t": "Human mobility in response to COVID-19 in France, Italy and UK",
+"au": [
+"A. Galeazzi",
+"M. Cinelli",
+"G. Bonaccorsi",
+"F. Pierri",
+"A. L. Schmidt",
+"A. Scala",
+"F. Pammolli",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2021,
+"pre": false,
+"theme": "mob"
+},
+{
+"key": "valensise2021lack",
+"t": "Lack of evidence for correlation between COVID-19 infodemic and vaccine acceptance",
+"au": [
+"C. M. Valensise",
+"M. Cinelli",
+"M. Nadini",
+"A. Galeazzi",
+"A. Peruzzi",
+"G. Etta",
+"F. Zollo",
+"A. Baronchelli",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "arXiv preprint",
+"yr": 2021,
+"pre": true,
+"theme": "mis"
+},
+{
+"key": "cinelli2021echo",
+"t": "The echo chamber effect on social media",
+"au": [
+"M. Cinelli",
+"G. De Francisci Morales",
+"A. Galeazzi",
+"W. Quattrociocchi",
+"M. Starnini"
+],
+"etal": false,
+"v": "PNAS",
+"yr": 2021,
+"pre": false,
+"theme": "polar"
+},
+{
+"key": "galeazzi2021ecological",
+"t": "The ecological rationality of decision criteria",
+"au": [
+"P. Galeazzi",
+"A. Galeazzi"
+],
+"etal": false,
+"v": "Synthese",
+"yr": 2021,
+"pre": false,
+"theme": "other"
+},
+{
+"key": "valensise2019drifts",
+"t": "Drifts and shifts: characterizing the evolution of users interests on Reddit",
+"au": [
+"C. M. Valensise",
+"M. Cinelli",
+"A. Galeazzi",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "arXiv preprint",
+"yr": 2019,
+"pre": true,
+"theme": "algo"
+},
+{
+"key": "cinelli2022conspiracy",
+"t": "Conspiracy theories and social media platforms",
+"au": [
+"M. Cinelli",
+"G. Etta",
+"M. Avalle",
+"A. Quattrociocchi",
+"N. Di Marco",
+"C. Valensise",
+"A. Galeazzi",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "Current Opinion in Psychology",
+"yr": 2022,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "cinelli2020covid",
+"t": "The COVID-19 social media infodemic",
+"au": [
+"M. Cinelli",
+"W. Quattrociocchi",
+"A. Galeazzi",
+"C. M. Valensise",
+"E. Brugnoli",
+"A. L. Schmidt",
+"P. Zola",
+"F. Zollo",
+"A. Scala"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2020,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "falkenberg2022growing",
+"t": "Growing polarization around climate change on social media",
+"au": [
+"M. Falkenberg",
+"A. Galeazzi",
+"M. Torricelli",
+"N. Di Marco",
+"F. Larosa",
+"M. Sas",
+"A. Mekacher",
+"W. Pearce",
+"F. Zollo",
+"W. Quattrociocchi"
+],
+"etal": true,
+"v": "Nature Climate Change",
+"yr": 2022,
+"pre": false,
+"theme": "clim"
+},
+{
+"key": "cinelli2020limited",
+"t": "The limited reach of fake news on Twitter during 2019 European elections",
+"au": [
+"M. Cinelli",
+"S. Cresci",
+"A. Galeazzi",
+"W. Quattrociocchi",
+"M. Tesconi"
+],
+"etal": false,
+"v": "PLOS ONE",
+"yr": 2020,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "etta2022covid",
+"t": "COVID-19 infodemic on Facebook and containment measures in Italy, United Kingdom and New Zealand",
+"au": [
+"G. Etta",
+"A. Galeazzi",
+"J. R. Hutchings",
+"C. S. James Smith",
+"M. Conti",
+"W. Quattrociocchi",
+"G. V. D. Riva"
+],
+"etal": false,
+"v": "PLOS ONE",
+"yr": 2022,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "galeazzi2024unveiling",
+"t": "Unveiling the hidden agenda: Biases in news reporting and consumption",
+"au": [
+"A. Galeazzi",
+"A. Peruzzi",
+"E. Brugnoli",
+"M. Delmastro",
+"F. Zollo"
+],
+"etal": false,
+"v": "PNAS Nexus",
+"yr": 2024,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "gentil2017deep",
+"t": "A deep neural network approach for customized prediction of mobile devices discharging time",
+"au": [
+"M. Gentil",
+"A. Galeazzi",
+"F. Chiariotti",
+"M. Polese",
+"A. Zanella",
+"M. Zorzi"
+],
+"etal": false,
+"v": "IEEE GLOBECOM",
+"yr": 2017,
+"pre": false,
+"theme": "other"
+},
+{
+"key": "galeazzi2021reputation",
+"t": "Reputation-based spectrum data fusion against falsification attacks in cognitive networks",
+"au": [
+"A. Galeazzi",
+"L. Badia",
+"S. C. Chang",
+"F. Gringoli"
+],
+"etal": false,
+"v": "IEEE MedComNet",
+"yr": 2021,
+"pre": false,
+"theme": "other"
+},
+{
+"key": "bonaccorsi2020economic",
+"t": "Economic and social consequences of human mobility restrictions under COVID-19",
+"au": [
+"G. Bonaccorsi",
+"F. Pierri",
+"M. Cinelli",
+"A. Flori",
+"A. Galeazzi",
+"F. Porcelli",
+"A. L. Schmidt",
+"C. M. Valensise",
+"A. Scala",
+"W. Quattrociocchi"
+],
+"etal": true,
+"v": "PNAS",
+"yr": 2020,
+"pre": false,
+"theme": "mob"
+},
+{
+"key": "valensise2021entropy",
+"t": "Entropy and complexity unveil the landscape of memes evolution",
+"au": [
+"C. M. Valensise",
+"A. Serra",
+"A. Galeazzi",
+"G. Etta",
+"M. Cinelli",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2021,
+"pre": false,
+"theme": "cult"
+},
+{
+"key": "flamino2023political",
+"t": "Political polarization of news media and influencers on Twitter in the 2016 and 2020 US presidential elections",
+"au": [
+"J. Flamino",
+"A. Galeazzi",
+"S. Feldman",
+"M. W. Macy",
+"B. Cross",
+"Z. Zhou",
+"M. Serafino",
+"A. Bovet",
+"H. A. Makse",
+"B. K. Szymanski"
+],
+"etal": false,
+"v": "Nature Human Behaviour",
+"yr": 2023,
+"pre": false,
+"theme": "polar"
+},
+{
+"key": "santoro2023analyzing",
+"t": "Analyzing the changing landscape of the Covid-19 vaccine debate on Twitter",
+"au": [
+"A. Santoro",
+"A. Galeazzi",
+"T. Scantamburlo",
+"A. Baronchelli",
+"W. Quattrociocchi",
+"F. Zollo"
+],
+"etal": false,
+"v": "Social Network Analysis and Mining",
+"yr": 2023,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "alipour2024cross",
+"t": "Cross-platform social dynamics: an analysis of ChatGPT and COVID-19 vaccine conversations",
+"au": [
+"S. Alipour",
+"A. Galeazzi",
+"E. Sangiorgio",
+"M. Avalle",
+"L. Bojic",
+"M. Cinelli",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2024,
+"pre": false,
+"theme": "algo"
+},
+{
+"key": "torricelli2023does",
+"t": "How does extreme weather impact the climate change discourse? Insights from the Twitter discussion on hurricanes",
+"au": [
+"M. Torricelli",
+"M. Falkenberg",
+"A. Galeazzi",
+"F. Zollo",
+"W. Quattrociocchi",
+"A. Baronchelli"
+],
+"etal": false,
+"v": "PLOS Climate",
+"yr": 2023,
+"pre": false,
+"theme": "clim"
+},
+{
+"key": "baqir2024news",
+"t": "News and misinformation consumption: A temporal comparison across European countries",
+"au": [
+"A. Baqir",
+"A. Galeazzi",
+"F. Zollo"
+],
+"etal": false,
+"v": "PLOS ONE",
+"yr": 2024,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "baqir2025unveiling",
+"t": "Unveiling the drivers of active participation in social media discourse",
+"au": [
+"A. Baqir",
+"Y. Chen",
+"F. Diaz-Diaz",
+"S. Kiyak",
+"T. Louf",
+"V. Morini",
+"V. Pansanella",
+"M. Torricelli",
+"A. Galeazzi"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2025,
+"pre": false,
+"theme": "algo"
+},
+{
+"key": "di2025ideological",
+"t": "Ideological fragmentation of the social media ecosystem: From echo chambers to echo platforms",
+"au": [
+"E. Di Martino",
+"A. Galeazzi",
+"M. Starnini",
+"W. Quattrociocchi",
+"M. Cinelli"
+],
+"etal": false,
+"v": "PNAS Nexus",
+"yr": 2025,
+"pre": false,
+"theme": "polar"
+},
+{
+"key": "amadori2025involvement",
+"t": "Involvement drives complexity of language in online debates",
+"au": [
+"E. Amadori",
+"D. Cirulli",
+"E. Di Martino",
+"J. Nudo",
+"M. Sahakyan",
+"E. Sangiorgio",
+"A. Santoro",
+"S. Zollo",
+"A. Galeazzi",
+"N. Di Marco"
+],
+"etal": false,
+"v": "arXiv preprint",
+"yr": 2025,
+"pre": true,
+"theme": "cult"
+},
+{
+"key": "fracaro2026disc",
+"t": "Disc-cover complexity trends in music illustrations from Sinatra to Swift",
+"au": [
+"N. Fracaro",
+"S. Cecconello",
+"M. Conti",
+"N. Di Marco",
+"A. Galeazzi"
+],
+"etal": false,
+"v": "ACM SAC",
+"yr": 2026,
+"pre": false,
+"theme": "cult"
+},
+{
+"key": "loru2025ideology",
+"t": "Ideology and polarization set the agenda on social media",
+"au": [
+"E. Loru",
+"A. Galeazzi",
+"A. Bonetti",
+"E. Sangiorgio",
+"N. Di Marco",
+"M. Cinelli",
+"M. Falkenberg",
+"A. Baronchelli",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2025,
+"pre": false,
+"theme": "polar"
+},
+{
+"key": "sartori2025insights",
+"t": "Insights into using temporal coordinated behaviour to explore connections between social media posts and influence.",
+"au": [
+"E. Sartori",
+"S. Tardelli",
+"M. Tesconi",
+"M. Conti",
+"A. Galeazzi",
+"S. Cresci",
+"G. Da San Martino"
+],
+"etal": true,
+"v": "Findings of EMNLP",
+"yr": 2025,
+"pre": false,
+"theme": "algo"
+},
+{
+"key": "szamely2025easy",
+"t": "Easy-access online social media metrics are associated with misinformation sharing activity",
+"au": [
+"J. Számely",
+"A. Galeazzi",
+"J. Koltai",
+"E. Omodei"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2025,
+"pre": false,
+"theme": "mis"
+},
+{
+"key": "galeazzi2026revealing",
+"t": "Revealing The Secret Power: How Algorithms Can Influence Content Visibility on Twitter/X",
+"au": [
+"A. Galeazzi",
+"P. Paudel",
+"M. Conti",
+"E. De Cristofaro",
+"G. Stringhini"
+],
+"etal": false,
+"v": "NDSS",
+"yr": 2026,
+"pre": false,
+"theme": "algo"
+},
+{
+"key": "di2026decoding",
+"t": "Decoding the evolution of melodic and harmonic structure of Western music through the lens of network science",
+"au": [
+"N. Di Marco",
+"E. Loru",
+"A. Galeazzi",
+"M. Cinelli",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "Scientific Reports",
+"yr": 2026,
+"pre": false,
+"theme": "cult"
+},
+{
+"key": "di2026platform",
+"t": "Platform Sorting Drives Ideological Fragmentation in the Social Media Ecosystem",
+"au": [
+"E. Di Martino",
+"A. Galeazzi",
+"M. Cinelli",
+"M. Starnini",
+"W. Quattrociocchi"
+],
+"etal": false,
+"v": "arXiv preprint",
+"yr": 2026,
+"pre": true,
+"theme": "polar"
+},
+{
+"key": "falkenberg2026toward",
+"t": "Toward an integrated and globally equitable understanding of political polarization",
+"au": [
+"M. Falkenberg",
+"M. Cinelli",
+"A. Galeazzi",
+"C. A. Bail",
+"R. M. Benito",
+"A. Bruns",
+"A. Gruzd",
+"D. Lazer",
+"J. K. Lee",
+"J. McCoy"
+],
+"etal": true,
+"v": "Nature Communications",
+"yr": 2026,
+"pre": false,
+"theme": "polar"
+},
+{
+"key": "di2026sampled",
+"t": "Sampled social media data risk biased and inconsistent estimates of online social phenomena",
+"au": [
+"G. Di Bona",
+"E. Fraxanet",
+"B. Komander",
+"A. Lo Sasso",
+"V. Morini",
+"A. Vendeville",
+"M. Falkenberg",
+"A. Galeazzi"
+],
+"etal": false,
+"v": "OSF preprint",
+"yr": 2026,
+"pre": true,
+"theme": "polar"
+},
+{
+"key": "baqir2026beyond",
+"t": "Beyond the West: social media polarization and political realignment in Pakistan",
+"au": [
+"A. Baqir",
+"A. Galeazzi",
+"A. Drocco",
+"F. Zollo"
+],
+"etal": false,
+"v": "EPJ Data Science",
+"yr": 2026,
+"pre": false,
+"theme": "polar"
+}
+],
+"edges": [
+[
+0,
+2,
+0.44,
+0
+],
+[
+0,
+5,
+0.6,
+1
+],
+[
+0,
+6,
+0.5,
+0
+],
+[
+0,
+7,
+0.3,
+0
+],
+[
+0,
+9,
+0.29,
+0
+],
+[
+0,
+10,
+0.38,
+0
+],
+[
+0,
+15,
+0.67,
+1
+],
+[
+1,
+14,
+0.6,
+0
+],
+[
+2,
+6,
+0.36,
+0
+],
+[
+2,
+7,
+0.33,
+0
+],
+[
+2,
+9,
+0.2,
+0
+],
+[
+2,
+11,
+0.2,
+0
+],
+[
+2,
+17,
+0.3,
+0
+],
+[
+3,
+22,
+0.6,
+0
+],
+[
+3,
+25,
+0.2,
+0
+],
+[
+3,
+30,
+0.6,
+0
+],
+[
+5,
+15,
+0.6,
+1
+],
+[
+5,
+18,
+0.29,
+0
+],
+[
+6,
+7,
+0.25,
+0
+],
+[
+6,
+9,
+0.22,
+0
+],
+[
+6,
+15,
+0.5,
+1
+],
+[
+7,
+9,
+0.2,
+0
+],
+[
+7,
+11,
+0.2,
+0
+],
+[
+8,
+19,
+0.4,
+0
+],
+[
+11,
+20,
+0.2,
+0
+],
+[
+15,
+29,
+0.29,
+0
+],
+[
+20,
+33,
+0.67,
+1
+],
+[
+22,
+25,
+0.2,
+0
+],
+[
+22,
+30,
+1.0,
+0
+],
+[
+25,
+29,
+0.5,
+1
+],
+[
+25,
+30,
+0.2,
+0
+],
+[
+3,
+16,
+0,
+0
+],
+[
+3,
+31,
+0,
+0
+],
+[
+3,
+32,
+0,
+0
+],
+[
+3,
+33,
+0,
+0
+],
+[
+18,
+21,
+0,
+0
+],
+[
+18,
+26,
+0,
+0
+],
+[
+18,
+28,
+0,
+0
+],
+[
+15,
+23,
+0,
+0
+],
+[
+15,
+24,
+0,
+0
+],
+[
+7,
+27,
+0,
+0
+],
+[
+8,
+25,
+0.21,
+1
+],
+[
+19,
+25,
+0.3,
+1
+],
+[
+7,
+14,
+0.42,
+1
+]
+]
+}

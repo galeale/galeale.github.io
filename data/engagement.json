@@ -1,0 +1,19 @@
+[
+  {"group": "talks", "date": "2026", "title": "Chi ha paura di ChatGPT?", "where": "Science4All, Padova"},
+  {"group": "talks", "date": "2025", "title": "Ad ognuno il proprio eco: come gli algoritmi influenzano i dibattiti online", "where": "Science4All, Padova"},
+  {"group": "talks", "date": "2025", "title": "Chi ha paura di ChatGPT?", "where": "Science4All, Padova"},
+  {"group": "talks", "date": "2025", "title": "La segregazione nei discorsi online: come algoritmi e echo chambers influenzano il dibattito pubblico", "where": "DataBeers Padova"},
+  {"group": "talks", "date": "2024", "title": "Non dirmi dove vai, ma ti dirò chi sei: cosa rivelano le nostre tracce digitali", "where": "Science4All, Padova"},
+  {"group": "talks", "date": "2024", "title": "Tanto ha sempre fatto caldo: l’evoluzione del negazionismo climatico nei social media", "where": "Science4All, Padova"},
+  {"group": "talks", "date": "2023", "title": "Polarizzazione e cambiamento climatico nei social media", "where": "DataBeers Roma"},
+
+  {"group": "press", "date": "2026", "title": "Jazz and classical music have become simpler, a new study finds", "where": "Science News"},
+  {"group": "press", "date": "2026", "title": "AI ‘slop’ is transforming social media – and a backlash is brewing", "where": "BBC News"},
+  {"group": "press", "date": "2024", "title": "In Italia le fake news sulla Brexit battono quelle sul Covid", "where": "ANSA"},
+  {"group": "press", "date": "2022", "title": "Su Twitter boom scettici clima, 4 volte più di chi a favore", "where": "ANSA"},
+  {"group": "press", "date": "2021", "title": "I simili si attraggono: come i social media creano le camere d’eco", "where": "Nature Italy"},
+
+  {"group": "policy", "date": "", "title": "Research from the IRIS project, funded by the UK Cabinet Office, was presented and discussed at the G7 Vaccine Summit.", "where": ""},
+  {"group": "policy", "date": "2022", "title": "Ofcom’s report “Media plurality & online intermediation of news consumption” cites The echo chamber effect on social media (PNAS, 2021).", "where": "Ofcom"},
+  {"group": "policy", "date": "", "title": "Projects that informed policy discussions on climate change (IRIS), misinformation and disinformation (IRIS, EUMEPLAT, DETERRENCE), and cybersecurity, data protection and regulation in public administration (GoTMaT).", "where": ""}
+]

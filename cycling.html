@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cycling · Alessandro Galeazzi</title>
+<meta name="description" content="Heatmap of every ride since 2021, with commutes and rides to conferences, and the CO2 they avoided.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* Layout: one dark column like the homepage hero — stats strip, full-width heat canvas, then the CO₂ ledger as a working table. */
+:root {
+  --bg: #0B1220;
+  --panel: #0F172A;
+  --line: #1E293B;
+  --line-strong: #334155;
+  --fg: #E8EDF6;
+  --muted: #94A3B8;
+  --accent: #93C5FD;
+  --commute: #FFB547;
+  --conf: #34D399;
+  --other: #6C8CFF;
+  --m-bike: #169C6E;
+  --m-car: #C7851F;
+  --m-train: #4A86E0;
+  --m-plane: #C056A8;
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.55; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between; padding-block: 18px; }
+.brand { font-weight: 700; font-size: 18px; }
+.crumb { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: 0.04em; }
+section { padding-block: 40px; }
+.eyebrow { margin: 0; font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+h1 { margin: 0; font-size: clamp(32px, 5vw, 46px); line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
+h2 { margin: 0; font-size: 28px; letter-spacing: -0.01em; text-wrap: balance; }
+.lede { margin: 0; max-width: 64ch; color: #CBD5E1; font-size: 17px; }
+.hero { display: flex; flex-direction: column; gap: 16px; padding-block: 48px 8px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 12px; }
+.stat { background: var(--bg); padding: 18px 20px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.stat span { font-size: 14px; color: var(--muted); }
+
+/* map */
+.mapbar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.chips, .views { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip, .seg button, .views button, .zoom button {
+  font: inherit; font-size: 14px; color: var(--fg); background: transparent; border: 1px solid var(--line-strong);
+  border-radius: 999px; min-height: 44px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+}
+.chip[aria-pressed="false"] { color: var(--muted); }
+.chip[aria-pressed="false"] .sw { opacity: 0.25; }
+.chip[aria-pressed="true"], .views button[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--line); border-color: var(--muted); }
+.chip .km { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sw { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.views button { border-radius: 8px; }
+.map { position: relative; height: 580px; max-width: 100%; background: #070C17; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; touch-action: none; cursor: grab; }
+.map.dragging { cursor: grabbing; }
+.map canvas { display: block; width: 100%; height: 100%; }
+.zoom { position: absolute; right: 12px; top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.zoom button { width: 44px; padding: 0; justify-content: center; background: rgba(15, 23, 42, 0.85); font-size: 20px; border-radius: 10px; }
+.mapnote { position: absolute; left: 14px; bottom: 12px; right: 70px; margin: 0; font-family: var(--mono); font-size: 12px; color: var(--muted); pointer-events: none; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-family: var(--mono); font-size: 14px; pointer-events: none; }
+.loading[hidden] { display: none; }
+.privacy { margin: 12px 0 0; font-size: 14px; color: var(--muted); max-width: 80ch; }
+@media (max-width: 640px) { .map { height: 440px; } }
+
+/* CO2 */
+.co2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 32px; align-items: start; }
+@media (max-width: 860px) { .co2 { grid-template-columns: minmax(0, 1fr); } }
+.big { display: flex; flex-direction: column; gap: 6px; }
+.big .num { font-size: clamp(56px, 9vw, 84px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.big .num small { font-size: 0.36em; font-weight: 600; letter-spacing: 0; color: var(--muted); margin-left: 6px; }
+.big p { margin: 0; color: #CBD5E1; max-width: 46ch; }
+.controls { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+.ctl { display: flex; flex-direction: column; gap: 6px; }
+.ctl > span { font-size: 14px; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { border-radius: 8px; }
+.ledger { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 620px; }
+th, td { padding: 12px 14px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+thead th { font-weight: 500; color: var(--muted); font-size: 13px; background: var(--panel); }
+tbody tr:last-child td { border-bottom: 0; }
+tfoot td { font-weight: 700; border-top: 1px solid var(--line-strong); border-bottom: 0; background: var(--panel); }
+td .route { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+td .sub { display: block; color: var(--muted); font-size: 13px; font-weight: 400; }
+.pos { color: var(--conf); }
+.method { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px 32px; font-size: 14px; color: #CBD5E1; }
+.method h3 { margin: 0 0 6px; font-size: 15px; color: var(--fg); }
+.method p, .method ul { margin: 0; }
+.method ul { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.mono { font-family: var(--mono); }
+.chart { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.key { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+.hatch, .seg-bike { background: repeating-linear-gradient(45deg, var(--line-strong) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.bars { display: flex; flex-direction: column; gap: 16px; }
+.brow { display: grid; grid-template-columns: minmax(0, 190px) minmax(0, 1fr) 64px; gap: 6px 14px; align-items: center; }
+.bname { font-weight: 500; font-size: 15px; line-height: 1.3; }
+.bname small { display: block; font-weight: 400; font-size: 12.5px; color: var(--muted); font-family: var(--mono); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.track { position: relative; height: 26px; display: flex; gap: 2px; background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: var(--step) 100%; background-repeat: repeat-x; border-left: 1px solid var(--line-strong); }
+.track > span { height: 100%; transition: width 0.35s ease; }
+.seg-net { border-radius: 0; }
+.seg-bike { border-radius: 0 4px 4px 0; }
+.seg-net:last-child { border-radius: 0 4px 4px 0; }
+.bval { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; font-size: 15px; }
+.axis { margin-top: -6px; }
+.ticks { position: relative; height: 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.ticks span { position: absolute; top: 0; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+.ticks span:first-child { transform: none; }
+.groups { display: flex; flex-direction: column; gap: 18px; }
+.grp { display: flex; flex-direction: column; gap: 4px; }
+.gname { font-weight: 600; font-size: 15px; line-height: 1.3; }
+.gname small { font-weight: 400; font-size: 12.5px; color: var(--muted); font-family: var(--mono); margin-left: 8px; font-variant-numeric: tabular-nums; }
+.mrow { display: grid; grid-template-columns: 52px minmax(0, 1fr) 52px; gap: 10px; align-items: center; }
+.mrow .ml { font-size: 13px; color: var(--muted); }
+.mrow .mv { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.mrow.on .ml, .mrow.on .mv { color: var(--fg); font-weight: 700; }
+.mrow .track { height: 14px; }
+.mrow .track > span { border-radius: 0 4px 4px 0; min-width: 2px; }
+.mrow.axis > span:first-child { display: block; }
+.gnote { font-size: 13px; color: var(--muted); margin: 2px 0 0 62px; }
+.tbl summary { cursor: pointer; color: var(--accent); font-size: 14px; min-height: 44px; display: flex; align-items: center; }
+.tbl .ledger { margin-top: 4px; }
+@media (max-width: 560px) {
+  .brow { grid-template-columns: minmax(0, 1fr) 56px; }
+  .brow .bname { grid-column: 1 / -1; }
+  .axis > span:first-child { display: none; }
+}
+
+/* trips */
+.trips { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 20px; }
+.trip { border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 6px; background: var(--panel); }
+.trip .ev { font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--conf); }
+.trip .rt { font-size: 18px; font-weight: 600; line-height: 1.3; }
+.trip .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer .wrap { padding-block: 28px; display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<header class="band">
+  <nav class="nav" aria-label="Main">
+    <div class="wrap">
+      <a class="brand" href="./">Alessandro Galeazzi</a>
+      <ul>
+        <li><a href="./">Research</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="./#teaching">Teaching</a></li>
+        <li><a href="./#engagement">Public engagement</a></li>
+        <li><a href="cycling.html" aria-current="page">Cycling</a></li>
+        <li><a href="./#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <p class="eyebrow">Long distances, by bike</p>
+    <h1>Every ride since 2021, and what it saved.</h1>
+    <p class="lede">Training, races, the Mestre–Padova commute and four rides to conferences, from Strava. Amber lines are commutes, green lines are trips to conferences, blue is everything else. CO₂ is counted only where the bike replaced another way of travelling.</p>
+    <div class="stats" id="stats">
+      <div class="stat"><b id="s-km">—</b><span>km ridden</span></div>
+      <div class="stat"><b id="s-rides">—</b><span>rides with GPS</span></div>
+      <div class="stat"><b id="s-commute">—</b><span>commutes recorded</span></div>
+      <div class="stat"><b id="s-conf">4</b><span>conferences reached by bike</span></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="mapbar">
+        <div class="chips" role="group" aria-label="Layers">
+          <button class="chip" id="l-commute" aria-pressed="true"><span class="sw" style="background: var(--commute)"></span>Commuting<span class="km" id="k-commute"></span></button>
+          <button class="chip" id="l-conference" aria-pressed="true"><span class="sw" style="background: var(--conf)"></span>To conferences<span class="km" id="k-conference"></span></button>
+          <button class="chip" id="l-other" aria-pressed="true"><span class="sw" style="background: var(--other)"></span>Training &amp; races<span class="km" id="k-other"></span></button>
+        </div>
+        <div class="views" role="group" aria-label="Map view">
+          <button id="v-home" aria-pressed="true">Veneto &amp; Dolomites</button>
+          <button id="v-europe" aria-pressed="false">Europe</button>
+          <button id="v-all" aria-pressed="false">Everything</button>
+        </div>
+      </div>
+      <div class="map" id="map">
+        <canvas id="cv" aria-label="Heatmap of ride tracks. Drag to pan, scroll or pinch to zoom." role="img"></canvas>
+        <div class="loading" id="loading">Loading 567 rides…</div>
+        <div class="zoom">
+          <button id="zin" aria-label="Zoom in">+</button>
+          <button id="zout" aria-label="Zoom out">−</button>
+        </div>
+        <p class="mapnote" id="scale"></p>
+      </div>
+      <p class="privacy">For privacy, the first and last 2–3 km of every ride are cut and everything within 2.5 km of home is hidden. The map shows routes, not where they start.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="co2">
+        <div class="big">
+          <p class="eyebrow">CO₂ avoided</p>
+          <div class="num"><span id="co2-total">—</span><small>kg CO₂e</small></div>
+          <p id="co2-sub">Compared with the way I would otherwise have travelled.</p>
+          <div class="controls">
+            <div class="ctl">
+              <span id="lab-commute">Padova and Trento: without the bike I would have gone by</span>
+              <div class="seg" role="group" aria-labelledby="lab-commute">
+                <button data-commute="car" aria-pressed="true">Car</button>
+                <button data-commute="train" aria-pressed="false">Train</button>
+              </div>
+            </div>
+            <div class="ctl">
+              <span id="lab-conf">Vienna, Maastricht and London: I would have gone by</span>
+              <div class="seg" role="group" aria-labelledby="lab-conf">
+                <button data-conf="plane" aria-pressed="true">Plane</button>
+                <button data-conf="train" aria-pressed="false">Train</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart">
+          <div class="legend" aria-hidden="true">
+            <span><i class="key" style="background: var(--m-bike)"></i>Bike (extra food)</span>
+            <span><i class="key" style="background: var(--m-car)"></i>Car</span>
+            <span><i class="key" style="background: var(--m-train)"></i>Train</span>
+            <span><i class="key" style="background: var(--m-plane)"></i>Plane</span>
+          </div>
+          <div class="groups" id="bars"></div>
+          <div class="mrow axis" aria-hidden="true"><span></span><div class="ticks" id="ticks"></div><span></span></div>
+          <p class="privacy">Emissions of each way of making the same journey, in kg CO₂e. Bold marks the option chosen above.</p>
+          <details class="tbl">
+            <summary>Show the numbers as a table</summary>
+          <div class="ledger">
+            <table>
+              <thead>
+                <tr><th scope="col">Journey</th><th scope="col">Cycled</th><th scope="col">Bike</th><th scope="col">Car</th><th scope="col">Train</th><th scope="col">Plane</th><th scope="col">Avoided</th></tr>
+              </thead>
+              <tbody id="rows"></tbody>
+              <tfoot><tr><td>Total</td><td id="t-cyc"></td><td></td><td></td><td></td><td></td><td id="t-net"></td></tr></tfoot>
+            </table>
+          </div>
+          <p class="privacy">Figures in kg CO₂e. “Avoided” compares the bike with the option chosen above.</p>
+          </details>
+        </div>
+      </div>
+
+      <div class="method">
+        <div>
+          <h3>What counts</h3>
+          <ul>
+            <li>Commutes between home and the Department of Mathematics in Padova recorded on Strava, one way or both.</li>
+            <li>The outbound rides to NetSci 2023, CS2Italy 2025 (out and back to Verona), NetSci 2025 and Complexity72h 2026.</li>
+            <li>Training rides and races replace nothing, so they count for zero.</li>
+            <li>Fuel and electricity for the alternatives; building the vehicles is left out on every side.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Food for the bike</h3>
+          <p>Only the energy beyond a normal day (about 3,500 kcal, training included) counts. Commuting replaces training, so it needs none. For each conference ride, the extra distance is the trip minus my average daily distance over the previous year, for the same number of days. Calories per km come from Strava (the trip's own figure where every leg has one, otherwise my median of <span class="mono" id="m-kpk">25</span> kcal/km). Ride food is pasta, bread, sugar and gummies, so every extra calorie is counted as an equal mix of wheat, cane sugar and beet sugar: <span class="mono">0.67 kg CO₂e per 1,000 kcal</span>.</p>
+        </div>
+        <div>
+          <h3>Train, car and plane</h3>
+          <p>Every alternative comes from EcoPassenger, the UIC calculator built by ifeu, for the real route between stations (Venezia Mestre to Padova, Trento, Verona, Wien Hbf, Maastricht and London St Pancras) : CO₂ per passenger, a mid-size diesel car driven alone, flights with the climate factor for effects at altitude and the drive to and from the airport, trains on the national electricity mix. One commute leg is <span class="mono">1.4 kg</span> by train and <span class="mono">6.5 kg</span> by car.</p>
+        </div>
+        <div>
+          <h3>Sources</h3>
+          <ul>
+            <li><a href="https://ecopassenger.org/" target="_blank" rel="noopener">EcoPassenger</a> (UIC, ifeu), queried November 2026</li>
+            <li><a href="https://ourworldindata.org/grapher/ghg-kcal-poore" target="_blank" rel="noopener">Poore &amp; Nemecek (2018)</a> via Our World in Data: wheat 0.59, cane sugar 0.91, beet sugar 0.52 kg CO₂e per 1,000 kcal</li>
+            <li>Ride distances and calories from my Strava archive</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Biking to conferences</h2>
+      <div class="trips" id="trips"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Department of Mathematics, University of Padova</span>
+    <span id="gen"></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var F = { car: 0.163, train: 0.035, plane: 0.126 };
+  var DETOUR = 1.25;
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-US'); };
+  var state = { commute: 'car', conf: 'plane', layers: { commute: true, conference: true, other: true } };
+  var D = null;
+
+  /* ---------- CO2 ledger ---------- */
+  var MODES = ['bike', 'car', 'train', 'plane'];
+  var NAMES = { bike: 'Bike', car: 'Car', train: 'Train', plane: 'Plane' };
+  function journeys() {
+    var out = [];
+    var L = D.commute.legs, e = D.commute.eco_leg;
+    out.push({ name: 'Commuting Mestre ↔ Padova', sub: L + ' legs · ' + fmt(D.commute.km) + ' km', cyc: D.commute.km,
+      em: { bike: 0, car: L * e.car, train: L * e.train }, pick: state.commute });
+    D.trips.forEach(function (t) {
+      var em = { bike: t.food_kg || 0 };
+      if (t.train_only) { em.car = t.eco.car; em.train = t.eco.train; }
+      else { em.train = t.eco.train; em.plane = t.eco.plane; }
+      out.push({ name: t.label, sub: t.event + ' · ' + fmt(t.km) + ' km', cyc: t.km, em: em, pick: t.train_only ? state.commute : state.conf });
+    });
+    return out;
+  }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function ledger() {
+    if (!D) return;
+    var J = journeys();
+    // one fixed scale across every journey and every mode, so the toggles never rescale the chart
+    var max = 0;
+    J.forEach(function (j) { Object.keys(j.em).forEach(function (m) { max = Math.max(max, j.em[m]); }); });
+    var top = Math.ceil(max / 50) * 50, step = 100;
+    var box = document.getElementById('bars'); box.textContent = '';
+    var tb = document.getElementById('rows'); tb.textContent = '';
+    var T = { cyc: 0, net: 0 }, worse = [];
+    J.forEach(function (j) {
+      var net = j.em[j.pick] - j.em.bike;
+      T.cyc += j.cyc; T.net += net;
+      if (net < 0) worse.push(j.name.replace('Mestre → ', ''));
+      var g = el('div', 'grp');
+      var h = el('div', 'gname', j.name); h.appendChild(el('small', '', j.sub)); g.appendChild(h);
+      MODES.forEach(function (m) {
+        if (!(m in j.em)) return;
+        var r = el('div', 'mrow' + (m === 'bike' || m === j.pick ? ' on' : ''));
+        r.setAttribute('role', 'img');
+        r.setAttribute('aria-label', j.name + ', ' + NAMES[m] + ': ' + fmt(j.em[m]) + ' kg CO2e');
+        r.appendChild(el('span', 'ml', NAMES[m]));
+        var tr = el('div', 'track'); tr.style.setProperty('--step', (step / top * 100) + '%');
+        var bar = el('span'); bar.style.width = (j.em[m] / top * 100) + '%'; bar.style.background = 'var(--m-' + m + ')';
+        if (j.em[m] > 0) tr.appendChild(bar);
+        r.appendChild(tr);
+        r.appendChild(el('span', 'mv', fmt(j.em[m])));
+        g.appendChild(r);
+      });
+      box.appendChild(g);
+      var row = el('tr'), td0 = el('td');
+      td0.appendChild(el('span', 'route', j.name)); td0.appendChild(el('span', 'sub', j.sub)); row.appendChild(td0);
+      row.appendChild(el('td', '', fmt(j.cyc) + ' km'));
+      MODES.forEach(function (m) { row.appendChild(el('td', '', m in j.em ? fmt(j.em[m]) : '—')); });
+      row.appendChild(el('td', net >= 0 ? 'pos' : '', (net >= 0 ? '' : '−') + fmt(Math.abs(net))));
+      tb.appendChild(row);
+    });
+    var ticks = document.getElementById('ticks'); ticks.textContent = '';
+    for (var k = 0; k <= top; k += step) { var s = el('span', '', k); s.style.left = (k / top * 100) + '%'; ticks.appendChild(s); }
+    document.getElementById('t-cyc').textContent = fmt(T.cyc) + ' km';
+    document.getElementById('t-net').textContent = (T.net < 0 ? '−' : '') + fmt(Math.abs(T.net));
+    document.getElementById('co2-total').textContent = (T.net < 0 ? '−' : '') + fmt(Math.abs(T.net));
+    var sub = 'Bike against ' + (state.commute === 'car' ? 'the car' : 'the train') + ' for Padova and Trento, and ' + (state.conf === 'plane' ? 'flying' : 'the train') + ' for the longer trips, over ' + fmt(T.cyc) + ' km.';
+    if (worse.length) sub += ' On ' + worse.join(', ') + ' the extra food for the ride emits more than the train would have.';
+    document.getElementById('co2-sub').textContent = sub;
+  }
+  document.querySelectorAll('[data-commute]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.commute = b.dataset.commute;
+      document.querySelectorAll('[data-commute]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      ledger();
+    });
+  });
+  document.querySelectorAll('[data-conf]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.conf = b.dataset.conf;
+      document.querySelectorAll('[data-conf]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      ledger();
+    });
+  });
+
+  /* ---------- map ---------- */
+  var R = 6378137;
+  function merc(lat, lon) { return [R * lon * Math.PI / 180, R * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360))]; }
+  function decode(str) {
+    var i = 0, lat = 0, lon = 0, out = [];
+    while (i < str.length) {
+      var b, shift = 0, res = 0;
+      do { b = str.charCodeAt(i++) - 63; res |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+      lat += (res & 1) ? ~(res >> 1) : (res >> 1);
+      shift = 0; res = 0;
+      do { b = str.charCodeAt(i++) - 63; res |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+      lon += (res & 1) ? ~(res >> 1) : (res >> 1);
+      var m = merc(lat / 1e5, lon / 1e5); out.push(m[0], m[1]);
+    }
+    var a = new Float64Array(out), x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (var k = 0; k < a.length; k += 2) { x0 = Math.min(x0, a[k]); x1 = Math.max(x1, a[k]); y0 = Math.min(y0, a[k + 1]); y1 = Math.max(y1, a[k + 1]); }
+    return { p: a, bb: [x0, y0, x1, y1] };
+  }
+  var PLACES = [['Venezia', 45.4408, 12.3155], ['Padova', 45.4064, 11.8768], ['Treviso', 45.6669, 12.243], ['Belluno', 46.1425, 12.2167], ['Trento', 46.0679, 11.1211], ['Verona', 45.4384, 10.9916], ['Bolzano', 46.4983, 11.3548], ['Wien', 48.2082, 16.3738], ['München', 48.1351, 11.582], ['Zürich', 47.3769, 8.5417], ['Strasbourg', 48.5734, 7.7521], ['Maastricht', 50.8514, 5.691], ['Paris', 48.8566, 2.3522], ['London', 51.5072, -0.1276]].map(function (p) { var m = merc(p[1], p[2]); return { n: p[0], x: m[0], y: m[1] }; });
+  var VIEWS = { home: [44.95, 10.9, 46.75, 13.1], europe: [44.6, -1.2, 52.2, 17.2] };
+
+  var map = document.getElementById('map'), cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  var layers = { commute: [], conference: [], other: [] };
+  var view = { cx: 0, cy: 0, s: 0.001 }; // s: CSS px per metre
+  var W = 0, H = 0, dpr = 1, queued = false;
+  var css = getComputedStyle(document.documentElement);
+  var COL = { commute: css.getPropertyValue('--commute').trim(), conference: css.getPropertyValue('--conf').trim(), other: css.getPropertyValue('--other').trim() };
+  var MUTED = css.getPropertyValue('--muted').trim();
+  function rgba(hex, a) { var n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
+
+  function fitBox(x0, y0, x1, y1) {
+    view.cx = (x0 + x1) / 2; view.cy = (y0 + y1) / 2;
+    view.s = Math.min(W / (x1 - x0), H / (y1 - y0)) * 0.94;
+    draw();
+  }
+  function fitLatLon(b) { var a = merc(b[0], b[1]), c = merc(b[2], b[3]); fitBox(a[0], a[1], c[0], c[1]); }
+  function fitAll() {
+    var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    Object.keys(layers).forEach(function (k) { layers[k].forEach(function (t) { x0 = Math.min(x0, t.bb[0]); y0 = Math.min(y0, t.bb[1]); x1 = Math.max(x1, t.bb[2]); y1 = Math.max(y1, t.bb[3]); }); });
+    if (isFinite(x0)) fitBox(x0, y0, x1, y1);
+  }
+  function resize() {
+    var r = map.getBoundingClientRect();
+    W = r.width; H = r.height; dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    draw();
+  }
+  function draw() { if (!queued) { queued = true; requestAnimationFrame(render); } }
+  function render() {
+    queued = false;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, W, H);
+    var s = view.s, ox = W / 2 - view.cx * s, oy = H / 2 + view.cy * s;
+    var vx0 = (0 - ox) / s, vx1 = (W - ox) / s, vy0 = (oy - H) / s, vy1 = oy / s;
+    var zoomed = s * 1000; // px per km
+    var lw = Math.max(1, Math.min(2.4, 0.9 + zoomed / 40));
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    [['other', 0.20], ['commute', 0.45], ['conference', 0.85]].forEach(function (L) {
+      if (!state.layers[L[0]]) return;
+      // background rides glow additively; commutes and conference rides sit on top in their own colour
+      ctx.globalCompositeOperation = L[0] === 'other' ? 'lighter' : 'source-over';
+      ctx.strokeStyle = rgba(COL[L[0]], L[1]);
+      ctx.lineWidth = L[0] === 'conference' ? lw + 0.6 : lw;
+      layers[L[0]].forEach(function (t) {
+        var b = t.bb;
+        if (b[2] < vx0 || b[0] > vx1 || b[3] < vy0 || b[1] > vy1) return;
+        var p = t.p, minStep = 0.8 / s, lx = p[0], ly = p[1];
+        ctx.beginPath(); ctx.moveTo(ox + lx * s, oy - ly * s);
+        for (var i = 2; i < p.length; i += 2) {
+          if (Math.abs(p[i] - lx) < minStep && Math.abs(p[i + 1] - ly) < minStep && i < p.length - 2) continue;
+          lx = p[i]; ly = p[i + 1];
+          ctx.lineTo(ox + lx * s, oy - ly * s);
+        }
+        ctx.stroke();
+      });
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.font = '500 12px ' + "'IBM Plex Mono', ui-monospace, monospace";
+    ctx.textBaseline = 'middle';
+    PLACES.forEach(function (pl) {
+      var x = ox + pl.x * s, y = oy - pl.y * s;
+      if (x < 8 || y < 8 || x > W - 90 || y > H - 30) return;
+      ctx.fillStyle = MUTED; ctx.beginPath(); ctx.arc(x, y, 2.5, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = 'rgba(226, 232, 240, 0.85)'; ctx.fillText(pl.n, x + 7, y);
+    });
+    // scale bar
+    var lat = Math.atan(Math.sinh(view.cy / R));
+    var mPerPx = 1 / (s / Math.cos(lat));
+    var target = mPerPx * 110, pow = Math.pow(10, Math.floor(Math.log10(target))), nice = pow;
+    [1, 2, 5, 10].forEach(function (m) { if (m * pow <= target) nice = m * pow; });
+    document.getElementById('scale').textContent = '├' + '─'.repeat(Math.max(2, Math.round(nice / mPerPx / 8))) + '┤ ' + (nice >= 1000 ? (nice / 1000) + ' km' : nice + ' m');
+  }
+
+  function setView(id) {
+    ['home', 'europe', 'all'].forEach(function (k) { document.getElementById('v-' + k).setAttribute('aria-pressed', String(k === id)); });
+    if (id === 'all') fitAll(); else fitLatLon(VIEWS[id]);
+  }
+  ['home', 'europe', 'all'].forEach(function (k) { document.getElementById('v-' + k).addEventListener('click', function () { setView(k); }); });
+  ['commute', 'conference', 'other'].forEach(function (k) {
+    var b = document.getElementById('l-' + k);
+    b.addEventListener('click', function () { state.layers[k] = !state.layers[k]; b.setAttribute('aria-pressed', String(state.layers[k])); draw(); });
+  });
+  function zoomAt(f, px, py) {
+    var s0 = view.s, s1 = Math.max(2e-6, Math.min(0.2, s0 * f));
+    var mx = view.cx + (px - W / 2) / s0, my = view.cy - (py - H / 2) / s0;
+    view.cx = mx - (px - W / 2) / s1; view.cy = my + (py - H / 2) / s1; view.s = s1;
+    draw();
+  }
+  document.getElementById('zin').addEventListener('click', function () { zoomAt(1.6, W / 2, H / 2); });
+  document.getElementById('zout').addEventListener('click', function () { zoomAt(1 / 1.6, W / 2, H / 2); });
+  map.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var r = map.getBoundingClientRect();
+    zoomAt(Math.exp(-e.deltaY * 0.0018), e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+  var ptrs = new Map(), pinch = null;
+  cv.addEventListener('pointerdown', function (e) {
+    cv.setPointerCapture(e.pointerId);
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    map.classList.add('dragging');
+    if (ptrs.size === 2) { var a = Array.from(ptrs.values()); pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); }
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (!ptrs.has(e.pointerId)) return;
+    var prev = ptrs.get(e.pointerId), cur = { x: e.clientX, y: e.clientY };
+    ptrs.set(e.pointerId, cur);
+    if (ptrs.size === 1) {
+      view.cx -= (cur.x - prev.x) / view.s; view.cy += (cur.y - prev.y) / view.s; draw();
+    } else if (ptrs.size === 2 && pinch) {
+      var a = Array.from(ptrs.values()), d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y), r = map.getBoundingClientRect();
+      zoomAt(d / pinch, (a[0].x + a[1].x) / 2 - r.left, (a[0].y + a[1].y) / 2 - r.top); pinch = d;
+    }
+  });
+  function endPtr(e) { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; if (!ptrs.size) map.classList.remove('dragging'); }
+  cv.addEventListener('pointerup', endPtr); cv.addEventListener('pointercancel', endPtr);
+  cv.addEventListener('dblclick', function (e) { var r = map.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(function () { resize(); }).observe(map);
+  resize(); fitLatLon(VIEWS.home);
+
+  /* ---------- data ---------- */
+  fetch('data/cycling-data.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+    D = d;
+    Object.keys(layers).forEach(function (k) { layers[k] = d.tracks[k].map(decode); });
+    var confKm = d.trips.reduce(function (a, t) { return a + t.km; }, 0);
+    document.getElementById('s-km').textContent = fmt(d.total_km);
+    document.getElementById('s-rides').textContent = fmt(d.rides);
+    document.getElementById('s-commute').textContent = fmt(d.commute.legs);
+    document.getElementById('k-commute').textContent = fmt(d.commute.km) + ' km';
+    document.getElementById('k-conference').textContent = fmt(confKm) + ' km';
+    document.getElementById('k-other').textContent = fmt(d.total_km - d.commute.km - confKm) + ' km';
+    if (d.food) document.getElementById('m-kpk').textContent = Math.round(d.food.median_kcal_per_km);
+    document.getElementById('gen').textContent = 'Rides from ' + d.period[0].slice(0, 7) + ' to ' + d.period[1].slice(0, 7) + ' · updated ' + d.generated;
+    var box = document.getElementById('trips');
+    d.trips.forEach(function (t) {
+      var el = document.createElement('article'); el.className = 'trip';
+      var ev = document.createElement('span'); ev.className = 'ev'; ev.textContent = t.event;
+      var rt = document.createElement('span'); rt.className = 'rt'; rt.textContent = t.label;
+      var fx = document.createElement('div'); fx.className = 'facts';
+      [fmt(t.km) + ' km', t.days + (t.days === 1 ? ' day' : ' days'), t.start === t.end ? t.start : t.start + ' → ' + t.end.slice(5)].forEach(function (v) { var s = document.createElement('span'); s.textContent = v; fx.appendChild(s); });
+      el.appendChild(ev); el.appendChild(rt); el.appendChild(fx); box.appendChild(el);
+    });
+    document.getElementById('loading').hidden = true;
+    ledger(); draw();
+  }).catch(function () {
+    document.getElementById('loading').textContent = 'The ride data did not load. Reload the page to try again.';
+  });
+})();
+</script>
+
+</body>
+</html>

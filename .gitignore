@@ -1,0 +1,5 @@
+private/
+*.pkl
+strava_export/
+__pycache__/
+.DS_Store

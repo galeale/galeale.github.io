@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alessandro Galeazzi</title>
+<meta name="description" content="Alessandro Galeazzi, Assistant Professor at the University of Padova: computational social science, echo chambers, misinformation and algorithm auditing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.hero { padding-block: 44px 56px; display: flex; flex-direction: column; gap: 22px; }
+.hero-top { display: flex; flex-wrap: wrap; gap: 20px 48px; align-items: flex-end; justify-content: space-between; }
+.hero-top .intro { flex: 1 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.hero-top p.bio { margin: 0; color: var(--on-ink-2); font-size: 17px; max-width: 70ch; }
+.links { display: flex; flex-wrap: wrap; gap: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; }
+.legend button { font: inherit; font-size: 14px; color: var(--on-ink); background: transparent; border: 1px solid var(--ink-line-2); border-radius: 999px; min-height: 44px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.legend button[aria-pressed="true"] { background: var(--ink-line); font-weight: 600; }
+.legend .dot { width: 10px; height: 10px; border-radius: 50%; }
+.legend .n { font-family: var(--mono); font-size: 12px; color: var(--on-ink-3); }
+.graph { position: relative; width: 100%; aspect-ratio: 2 / 1; min-height: 460px; background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 20px; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.graph svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.graph .node { cursor: grab; touch-action: none; }
+.graph .node:focus { outline: none; }
+.graph .node:focus-visible .ring { stroke: var(--on-ink); stroke-width: 3; }
+.graph .label { font-family: var(--mono); font-size: 12px; font-weight: 500; pointer-events: none; }
+.key { margin: -10px 0 0; font-family: var(--mono); font-size: 12px; color: var(--on-ink-3); }
+.tip { position: absolute; max-width: 300px; width: max-content; background: var(--on-ink); color: var(--ink); font-size: 13px; line-height: 1.4; padding: 8px 12px; border-radius: 8px; pointer-events: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+.panel { display: flex; flex-wrap: wrap; gap: 10px 32px; align-items: baseline; border: 1px solid var(--ink-line); border-radius: 14px; padding: 20px 24px; background: var(--ink-2); }
+.panel .k { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+.panel .body { flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.panel .t { font-size: 18px; font-weight: 600; line-height: 1.35; }
+.panel .a { font-size: 14px; color: var(--on-ink-3); }
+.panel .m { font-family: var(--mono); font-size: 13px; color: var(--on-ink-2); font-variant-numeric: tabular-nums; }
+.panel a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; text-decoration: none; }
+.strip { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+.card { flex: 0 0 340px; max-width: 86vw; scroll-snap-align: start; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.card svg { width: 100%; height: auto; display: block; }
+.card .k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; }
+.card h3 { margin: 0; font-size: 18px; line-height: 1.35; }
+.card p { margin: 0; font-size: 14px; color: var(--text-2); }
+.card .src { color: var(--text-3); font-size: 13px; }
+.eng { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; }
+.eng-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.eng-col h3 { margin: 12px 0 0; font-size: 15px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-3); }
+.eng-col h3:first-child { margin-top: 0; }
+.talks { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.talk { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.talk .d { font-family: var(--mono); font-size: 14px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.talk .tt { display: flex; flex-direction: column; gap: 2px; line-height: 1.4; }
+.talk .w { font-size: 14px; color: var(--text-2); }
+.courses { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.course { display: grid; grid-template-columns: minmax(0, 1fr) 190px 220px; gap: 6px 24px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.course .cm { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.course .cn { font-weight: 600; }
+.course .cw, .course .cr { font-size: 14px; color: var(--text-2); }
+.course .cy { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.course .yr { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.contact { padding-block: 56px 64px; }
+.contact .wrap { display: flex; flex-direction: column; gap: 24px; }
+.contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.ask { border: 1px solid var(--ink-line); border-radius: 14px; padding: 22px; background: var(--ink-2); display: flex; flex-direction: column; gap: 8px; }
+.ask h3 { margin: 0; font-size: 19px; line-height: 1.3; text-wrap: balance; }
+.ask p:last-child { margin: 0; color: var(--on-ink-2); }
+.mail { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
+.mail .addr { font-family: var(--mono); font-size: 16px; color: var(--on-ink); user-select: all; }
+.mail button { font: inherit; background: transparent; cursor: pointer; }
+@media (max-width: 760px) { .eng, .contact-grid { grid-template-columns: minmax(0, 1fr); } .course { grid-template-columns: minmax(0, 1fr); } .course .cy { justify-content: flex-start; } }
+.bike { display: flex; flex-wrap: wrap; gap: 32px; align-items: center; }
+.bike .txt { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.bike .txt p { margin: 0; color: var(--text-2); font-size: 17px; }
+.bike .num { flex: 1 1 300px; min-width: 0; background: var(--ink); color: var(--on-ink); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 6px; }
+.bike .num b { font-size: 52px; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.bike .num span { color: var(--on-ink-3); font-size: 14px; }
+.eyebrow.dark { color: var(--link); }
+@media (max-width: 640px) { .graph { aspect-ratio: auto; height: 520px; } }
+</style>
+</head>
+<body>
+<header class="band">
+  <nav class="nav" aria-label="Main">
+    <div class="wrap">
+      <a class="brand" href="./">Alessandro Galeazzi</a>
+      <ul>
+        <li><a href="./" aria-current="page">Research</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="#teaching">Teaching</a></li>
+        <li><a href="#engagement" id="nav-engagement">Public engagement</a></li>
+        <li><a href="cycling.html">Cycling</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="wrap hero">
+    <div class="hero-top">
+      <div class="intro">
+        <p class="eyebrow">Assistant Professor · University of Padova</p>
+        <h1>My research, as a network.</h1>
+        <p class="bio">Computational social science at the Department of Mathematics and the SPRITZ Security &amp; Privacy group: echo chambers, misinformation, climate discourse and the algorithms behind our feeds. Every node below is a paper. Drag them around.</p>
+      </div>
+      <div class="links">
+        <a class="btn solid" href="https://scholar.google.com/citations?user=DK0tXAIAAAAJ">Google Scholar</a>
+        <a class="btn ghost" href="publications.html">All publications</a>
+      </div>
+    </div>
+    <div class="legend" id="legend" role="group" aria-label="Highlight a research theme"></div>
+    <div class="graph" id="graph">
+      <svg id="svg" role="group" aria-label="Network of papers grouped by research theme"></svg>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+    <p class="key">Node size ∝ citations · hollow nodes are preprints · solid lines join papers of the same theme by shared co-authors · dashed lines join themes</p>
+    <div class="panel" id="panel" aria-live="polite">
+      <span class="k" id="p-theme"></span>
+      <div class="body"><span class="t" id="p-title"></span><span class="a" id="p-authors"></span></div>
+      <span class="m" id="p-meta"></span>
+      <a id="p-link" href="https://scholar.google.com/citations?user=DK0tXAIAAAAJ">Find it →</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section" id="pictures">
+    <div class="wrap">
+      <h2>Research in pictures</h2>
+      <p class="lead">Four questions, one figure each.</p>
+      <div class="strip">
+        <article class="card">
+          <svg viewBox="0 0 480 260" role="img" aria-label="Two clusters of like-minded users joined by a single bridge">
+            <g stroke="#BFDBFE" stroke-width="2"><line x1="110" y1="110" x2="160" y2="80"/><line x1="110" y1="110" x2="80" y2="170"/><line x1="110" y1="110" x2="150" y2="160"/><line x1="160" y1="80" x2="190" y2="140"/><line x1="80" y1="170" x2="150" y2="160"/><line x1="150" y1="160" x2="190" y2="140"/></g>
+            <g stroke="#FED7AA" stroke-width="2"><line x1="350" y1="100" x2="400" y2="80"/><line x1="350" y1="100" x2="320" y2="170"/><line x1="350" y1="100" x2="390" y2="160"/><line x1="400" y1="80" x2="420" y2="140"/><line x1="320" y1="170" x2="390" y2="160"/><line x1="390" y1="160" x2="420" y2="140"/></g>
+            <line x1="190" y1="140" x2="320" y2="170" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6 6"/>
+            <g fill="#1D4ED8"><circle cx="110" cy="110" r="14"/><circle cx="160" cy="80" r="9"/><circle cx="80" cy="170" r="10"/><circle cx="150" cy="160" r="12"/><circle cx="190" cy="140" r="9"/></g>
+            <g fill="#C2410C"><circle cx="350" cy="100" r="14"/><circle cx="400" cy="80" r="9"/><circle cx="320" cy="170" r="10"/><circle cx="390" cy="160" r="12"/><circle cx="420" cy="140" r="9"/></g>
+          </svg>
+          <p class="k" style="color: #1D4ED8">ECHO CHAMBERS</p>
+          <h3>Do social media lock us into echo chambers?</h3>
+          <p>We compared how users cluster with like-minded peers on Facebook, Twitter, Reddit and Gab. On Facebook and Twitter, interactions were dominated by homophilic clusters.</p>
+          <p class="src">The echo chamber effect on social media, PNAS 2021</p>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 480 260" role="img" aria-label="A cascade of reshares mixing reliable and questionable sources">
+            <g stroke="#CBD5E1" stroke-width="2"><line x1="60" y1="130" x2="160" y2="80"/><line x1="60" y1="130" x2="160" y2="180"/><line x1="160" y1="80" x2="260" y2="45"/><line x1="160" y1="80" x2="260" y2="110"/><line x1="160" y1="180" x2="260" y2="155"/><line x1="160" y1="180" x2="260" y2="220"/><line x1="260" y1="45" x2="360" y2="35"/><line x1="260" y1="110" x2="360" y2="100"/><line x1="260" y1="155" x2="360" y2="150"/><line x1="260" y1="220" x2="360" y2="225"/><line x1="360" y1="150" x2="440" y2="140"/><line x1="360" y1="225" x2="440" y2="215"/></g>
+            <circle cx="60" cy="130" r="15" fill="#0F172A"/>
+            <g fill="#1D4ED8"><circle cx="160" cy="80" r="10"/><circle cx="260" cy="45" r="8"/><circle cx="260" cy="110" r="8"/><circle cx="360" cy="35" r="7"/><circle cx="360" cy="100" r="7"/></g>
+            <g fill="#C2410C"><circle cx="160" cy="180" r="10"/><circle cx="260" cy="155" r="8"/><circle cx="260" cy="220" r="8"/><circle cx="360" cy="150" r="7"/><circle cx="360" cy="225" r="7"/><circle cx="440" cy="140" r="6"/><circle cx="440" cy="215" r="6"/></g>
+          </svg>
+          <p class="k" style="color: #C2410C">MISINFORMATION</p>
+          <h3>How did COVID-19 information spread across platforms?</h3>
+          <p>We tracked COVID-19 conversations on five platforms, comparing reliable and questionable sources. Each platform responded to questionable content differently.</p>
+          <p class="src">The COVID-19 social media infodemic, Scientific Reports 2020</p>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 480 260" role="img" aria-label="Overlapping opinion distributions in 2015 that split apart by 2021">
+            <line x1="20" y1="210" x2="220" y2="210" stroke="#0F172A" stroke-width="2"/>
+            <line x1="260" y1="210" x2="460" y2="210" stroke="#0F172A" stroke-width="2"/>
+            <path d="M30 210 C70 210 80 100 110 100 C140 100 150 210 190 210" fill="#DCFCE7" stroke="#15803D" stroke-width="2.5"/>
+            <path d="M50 210 C90 210 100 130 130 130 C160 130 170 210 210 210" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="6 5"/>
+            <path d="M270 210 C290 210 300 70 320 70 C340 70 350 210 360 210" fill="#DCFCE7" stroke="#15803D" stroke-width="2.5"/>
+            <path d="M360 210 C370 210 385 50 410 50 C435 50 445 210 455 210" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="6 5"/>
+            <text x="120" y="244" font-family="IBM Plex Mono, monospace" font-size="16" fill="#475569" text-anchor="middle">COP21 · 2015</text>
+            <text x="360" y="244" font-family="IBM Plex Mono, monospace" font-size="16" fill="#475569" text-anchor="middle">COP26 · 2021</text>
+          </svg>
+          <p class="k" style="color: #15803D">CLIMATE DISCOURSE</p>
+          <h3>Is the climate debate becoming more polarized?</h3>
+          <p>Following the Twitter conversation around the UN climate summits from COP21 to COP26, ideological polarization grew markedly, alongside a growing climate-sceptic community.</p>
+          <p class="src">Growing polarization around climate change on social media, Nature Climate Change 2022</p>
+        </article>
+        <article class="card">
+          <svg viewBox="0 0 480 260" role="img" aria-label="Expected versus observed reach of posts; the last posts reach far fewer users">
+            <line x1="40" y1="220" x2="460" y2="220" stroke="#0F172A" stroke-width="2"/>
+            <g fill="#CBD5E1"><rect x="60" y="70" width="30" height="150"/><rect x="140" y="90" width="30" height="130"/><rect x="220" y="60" width="30" height="160"/><rect x="300" y="80" width="30" height="140"/><rect x="380" y="65" width="30" height="155"/></g>
+            <g fill="#7C3AED"><rect x="94" y="76" width="30" height="144"/><rect x="174" y="98" width="30" height="122"/><rect x="254" y="70" width="30" height="150"/><rect x="334" y="170" width="30" height="50"/><rect x="414" y="180" width="30" height="40"/></g>
+          </svg>
+          <p class="k" style="color: #7C3AED">ALGORITHMIC VISIBILITY</p>
+          <h3>Can a platform quietly limit who sees your posts?</h3>
+          <p>We introduced the p-score, a normalized visibility metric, to audit whether some content on Twitter/X reaches fewer people than its engagement would suggest.</p>
+          <p class="src">Revealing the secret power, NDSS 2026</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="teaching" style="background: var(--card); border-block: 1px solid var(--line)">
+    <div class="wrap">
+      <h2>Teaching</h2>
+      <ul class="courses" id="courses"></ul>
+    </div>
+  </section>
+
+  <section class="section" id="engagement">
+    <div class="wrap">
+      <h2>Public engagement</h2>
+      <p class="lead">Talks for the public, research in the news, and work that reached policy makers.</p>
+      <div class="eng">
+        <div class="eng-col">
+          <h3>Talks for the public</h3>
+          <div class="talks" id="eng-talks"></div>
+        </div>
+        <div class="eng-col">
+          <h3>In the press</h3>
+          <div class="talks" id="eng-press"></div>
+          <h3>Policy and impact</h3>
+          <div class="talks" id="eng-policy"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cycling">
+    <div class="wrap">
+      <div class="bike">
+        <div class="txt">
+          <p class="eyebrow dark">Off the desk</p>
+          <h2>Long distances, by bike</h2>
+          <p>Race Across Italy 775 in 35 hours, and four rides to conferences: Vienna, Trento, Maastricht and London. Plus the daily commute to Padova.</p>
+          <a href="cycling.html" style="font-weight: 600; text-decoration: none">See the heatmap and the CO₂ ledger →</a>
+        </div>
+        <div class="num">
+          <span>CO₂ avoided instead of driving and flying</span>
+          <b id="co2">—</b>
+          <span id="co2-sub">kg CO₂e</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band contact" id="contact">
+    <div class="wrap">
+      <h2>Get in touch</h2>
+      <div class="contact-grid">
+        <div class="ask">
+          <p class="eyebrow">Collaborate</p>
+          <h3>Working on online polarization, misinformation or platform algorithms?</h3>
+          <p>I am always happy to hear about research ideas, data and projects in computational social science. Write to me with a few lines on what you have in mind.</p>
+        </div>
+        <div class="ask">
+          <p class="eyebrow">Ride</p>
+          <h3>Fancy a ride around Venice, Padova or in the Dolomites?</h3>
+          <p>Long days in the saddle, a climb against the clock or a ride to the next conference: if you are around and want company, send me an email.</p>
+        </div>
+      </div>
+      <div class="mail">
+        <a class="btn solid" id="mail-link" href="mailto:alessandro.galeazzi@unipd.it">Email me</a>
+        <span class="addr" id="mail-addr">alessandro.galeazzi@unipd.it</span>
+        <button type="button" class="btn ghost" id="mail-copy">Copy address</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Department of Mathematics, University of Padova</span>
+    <span>Data: Google Scholar, my Strava archive</span>
+  </div>
+</footer>
+
+<script src="assets/graph.js"></script>
+<script>
+(function () {
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-US'); };
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+  fetch('data/engagement.json').then(function (r) { return r.ok ? r.json() : []; }).then(function (items) {
+    if (!items || !items.length) { document.getElementById('engagement').hidden = true; document.getElementById('nav-engagement').parentNode.hidden = true; return; }
+    ['talks', 'press', 'policy'].forEach(function (g) {
+      var box = document.getElementById('eng-' + g);
+      items.filter(function (it) { return it.group === g; }).forEach(function (it) {
+        var row = mk('div', 'talk');
+        row.appendChild(mk('span', 'd', it.date || ''));
+        var t = mk(it.url ? 'a' : 'span', 'tt', it.title); if (it.url) t.href = it.url;
+        if (it.where) t.appendChild(mk('span', 'w', it.where));
+        row.appendChild(t); box.appendChild(row);
+      });
+    });
+  }).catch(function () {});
+  fetch('data/teaching.json').then(function (r) { return r.json(); }).then(function (list) {
+    var ul = document.getElementById('courses');
+    list.forEach(function (c) {
+      var li = mk('li', 'course');
+      var main = mk('div', 'cm');
+      main.appendChild(mk('span', 'cn', c.course));
+      main.appendChild(mk('span', 'cw', [c.programme, c.institution].filter(Boolean).join(' · ')));
+      li.appendChild(main);
+      li.appendChild(mk('span', 'cr', c.role + (c.hours ? ', ' + c.hours + ' h' : '')));
+      var yrs = mk('span', 'cy'); c.years.forEach(function (y) { yrs.appendChild(mk('span', 'yr', y)); });
+      li.appendChild(yrs); ul.appendChild(li);
+    });
+  }).catch(function () { document.getElementById('teaching').hidden = true; });
+  document.getElementById('mail-copy').addEventListener('click', function () {
+    var b = this, addr = document.getElementById('mail-addr').textContent;
+    var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy address'; }, 1600); };
+    if (navigator.clipboard) navigator.clipboard.writeText(addr).then(done, function () { selectAddr(); });
+    else selectAddr();
+    function selectAddr() { var r = document.createRange(); r.selectNodeContents(document.getElementById('mail-addr')); var s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  });
+  fetch('data/cycling-data.json').then(function (r) { return r.json(); }).then(function (d) {
+    var net = d.commute.legs * d.commute.eco_leg.car;
+    d.trips.forEach(function (t) { net += (t.train_only ? t.eco.car : t.eco.plane) - (t.food_kg || 0); });
+    document.getElementById('co2').textContent = fmt(net) + ' kg';
+    document.getElementById('co2-sub').textContent = 'over ' + fmt(d.commute.km + d.trips.reduce(function (a, t) { return a + t.km; }, 0)) + ' km of commuting and rides to conferences';
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>
