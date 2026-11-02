@@ -14,6 +14,12 @@
 .head p { margin: 0; color: var(--on-ink-2); max-width: 72ch; }
 .summary-text { display: flex; flex-direction: column; gap: 12px; font-size: 17px; }
 .summary-text strong { color: var(--on-ink); font-weight: 600; }
+.summary-text p, .head p.service { margin: 0; color: var(--on-ink-2); }
+.intro { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 24px 48px; align-items: center; }
+.streams { margin: 0; }
+.streams svg { width: 100%; max-width: 440px; height: auto; display: block; margin-inline: auto; }
+.head p.service { font-size: 15px; max-width: none; border-top: 1px solid var(--ink-line); padding-top: 16px; }
+@media (max-width: 860px) { .intro { grid-template-columns: minmax(0, 1fr); } }
 .list-head { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; justify-content: space-between; }
 .list-head p { margin: 0; color: var(--text-2); font-size: 15px; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -55,15 +61,53 @@
   <div class="wrap head">
     <p class="eyebrow">Research</p>
     <h1>Research</h1>
-    <div class="summary-text">
-      <p>My research uses digital traces to understand how the interplay between users, content and algorithms shapes digital societies. I combine network analysis, natural language processing, machine learning and statistical inference, increasingly with large language models, along three lines. <strong>Polarization and echo chambers</strong>: how online fragmentation emerges from individuals, content and platforms, across topics such as elections, vaccines and climate change, and across platforms. <strong>Algorithmic mediation and agenda setting</strong>: who leads online debates, how content is consumed, and how to measure from the outside the visibility changes that ranking algorithms introduce. <strong>Cultural artifacts and collective behaviour</strong>: music, album covers, memes and language as a window on how culture and creativity evolve. Alongside these, I have worked on misinformation, news consumption and human mobility during COVID-19.</p>
-      <p>I have published in PNAS, Nature Human Behaviour, Nature Climate Change, Nature Communications, PNAS Nexus, Scientific Reports, EPJ Data Science, PLOS ONE and IEEE Transactions on Computational Social Systems, and at NDSS and Findings of EMNLP. I contributed to a multidisciplinary review on a globally equitable understanding of political polarization (Nature Communications, 2026). I am an Academic Editor for PLOS ONE, review for Nature Communications, Scientific Reports, PNAS Nexus, EPJ Data Science and others, and serve on the programme committees of NetSci, NetSciX and Complex Networks.</p>
+    <div class="intro">
+      <div class="summary-text">
+        <p>My research is interdisciplinary. It sits between computer science, network science and the social sciences, and I build it together with sociologists, political scientists, economists, physicists and climate scientists. I use digital traces to understand how the interplay between users, content and algorithms shapes digital societies, combining network analysis, natural language processing, machine learning and statistical inference, increasingly with large language models.</p>
+        <p>The work follows three lines. <strong>Polarization and echo chambers</strong>: how online fragmentation emerges from individuals, content and platforms, across elections, vaccines and climate change. <strong>Algorithmic mediation and agenda setting</strong>: who leads online debates, how content is consumed, and how to measure from the outside the visibility changes that ranking algorithms introduce. <strong>Cultural artifacts and collective behaviour</strong>: music, album covers, memes and language as a window on how culture and creativity evolve. I have also worked on misinformation, news consumption and human mobility during COVID-19.</p>
+      </div>
+      <figure class="streams">
+        <svg viewBox="0 0 440 400" role="img" aria-label="Three research lines around digital traces: polarization and echo chambers; algorithmic mediation and agenda setting; cultural artifacts and collective behaviour">
+          <g stroke="#334155" stroke-width="2" stroke-dasharray="6 6">
+            <line x1="220" y1="215" x2="110" y2="105"/><line x1="220" y1="215" x2="330" y2="105"/><line x1="220" y1="215" x2="220" y2="335"/>
+          </g>
+          <g stroke-width="1.5" opacity="0.55">
+            <line x1="110" y1="105" x2="76" y2="70" stroke="#60A5FA"/><line x1="110" y1="105" x2="62" y2="122" stroke="#60A5FA"/><line x1="110" y1="105" x2="96" y2="150" stroke="#60A5FA"/>
+            <line x1="330" y1="105" x2="366" y2="72" stroke="#A78BFA"/><line x1="330" y1="105" x2="380" y2="120" stroke="#A78BFA"/><line x1="330" y1="105" x2="344" y2="152" stroke="#A78BFA"/>
+            <line x1="220" y1="335" x2="174" y2="356" stroke="#F472B6"/><line x1="220" y1="335" x2="266" y2="356" stroke="#F472B6"/><line x1="220" y1="335" x2="220" y2="384" stroke="#F472B6"/>
+          </g>
+          <g fill="#0B1220" stroke-width="2.5">
+            <circle cx="76" cy="70" r="6" stroke="#60A5FA"/><circle cx="62" cy="122" r="7" stroke="#60A5FA"/><circle cx="96" cy="150" r="5" stroke="#60A5FA"/>
+            <circle cx="366" cy="72" r="6" stroke="#A78BFA"/><circle cx="380" cy="120" r="5" stroke="#A78BFA"/><circle cx="344" cy="152" r="7" stroke="#A78BFA"/>
+            <circle cx="174" cy="356" r="6" stroke="#F472B6"/><circle cx="266" cy="356" r="5" stroke="#F472B6"/><circle cx="220" cy="384" r="5" stroke="#F472B6"/>
+          </g>
+          <circle cx="110" cy="105" r="22" fill="#60A5FA"/>
+          <circle cx="330" cy="105" r="22" fill="#A78BFA"/>
+          <circle cx="220" cy="335" r="22" fill="#F472B6"/>
+          <circle cx="220" cy="215" r="34" fill="#0F172A" stroke="#E2E8F0" stroke-width="2"/>
+          <g font-family="IBM Plex Sans, system-ui, sans-serif" text-anchor="middle">
+            <text x="220" y="211" font-size="12" font-weight="600" fill="#F8FAFC">Digital</text>
+            <text x="220" y="226" font-size="12" font-weight="600" fill="#F8FAFC">traces</text>
+            <text x="220" y="268" font-size="11.5" fill="#94A3B8">users · content · algorithms</text>
+            <text x="110" y="24" font-size="13.5" font-weight="600" fill="#F8FAFC">Polarization &amp;</text>
+            <text x="110" y="41" font-size="13.5" font-weight="600" fill="#F8FAFC">echo chambers</text>
+            <text x="330" y="24" font-size="13.5" font-weight="600" fill="#F8FAFC">Algorithmic mediation</text>
+            <text x="330" y="41" font-size="13.5" font-weight="600" fill="#F8FAFC">&amp; agenda setting</text>
+            <text x="110" y="186" font-size="11.5" fill="#94A3B8">elections · vaccines · climate</text>
+            <text x="330" y="186" font-size="11.5" fill="#94A3B8">who leads · visibility audits</text>
+            <text x="352" y="330" font-size="13.5" font-weight="600" fill="#F8FAFC">Cultural artifacts &amp;</text>
+            <text x="352" y="347" font-size="13.5" font-weight="600" fill="#F8FAFC">collective behaviour</text>
+            <text x="352" y="366" font-size="11.5" fill="#94A3B8">music · covers · memes</text>
+          </g>
+        </svg>
+      </figure>
     </div>
+    <p class="service">I have published in PNAS, Nature Human Behaviour, Nature Climate Change, Nature Communications, PNAS Nexus, Scientific Reports, EPJ Data Science, PLOS ONE and IEEE Transactions on Computational Social Systems, and at NDSS and Findings of EMNLP. I contributed to a multidisciplinary review on a globally equitable understanding of political polarization (Nature Communications, 2026). I am an Academic Editor for PLOS ONE, review for Nature Communications, Scientific Reports, PNAS Nexus, EPJ Data Science and others, and serve on the programme committees of NetSci, NetSciX and Complex Networks.</p>
   </div>
 </header>
 <main class="section">
   <div class="wrap">
-    <div class="list-head"><h2>Papers and preprints</h2><p id="summary">Citation counts from <a href="https://scholar.google.com/citations?user=DK0tXAIAAAAJ" target="_blank" rel="noopener">Google Scholar</a>.</p></div>
+    <div class="list-head"><h2>Papers and preprints</h2></div>
     <div class="filters" id="filters" role="group" aria-label="Filter by research theme"></div>
     <div class="list" id="list"></div>
   </div>
@@ -71,7 +115,7 @@
 <footer class="foot">
   <div class="wrap">
     <span>Department of Mathematics, University of Padova</span>
-    <span>Generated from data/publications.bib</span>
+    <span><a href="./#contact">Get in touch</a></span>
   </div>
 </footer>
 <script>
@@ -100,7 +144,6 @@
         var v = document.createElement('span'); v.className = 'v'; v.textContent = p.v; m.appendChild(v);
         if (p.pre) { var pr = document.createElement('span'); pr.className = 'pre'; pr.textContent = 'Preprint'; m.appendChild(pr); }
         var ch = document.createElement('span'); ch.className = 'chip'; var dot = document.createElement('i'); dot.style.background = T[p.theme].color; ch.appendChild(dot); ch.appendChild(document.createTextNode(T[p.theme].label)); m.appendChild(ch);
-        if (p.c) { var c = document.createElement('span'); c.textContent = 'cited by ' + p.c.toLocaleString('en-US'); m.appendChild(c); }
         li.appendChild(t); li.appendChild(a); li.appendChild(m); ol.appendChild(li);
       });
       sec.appendChild(ol); box.appendChild(sec);
@@ -116,8 +159,6 @@
     var onLight = { polar: '#2563EB', mis: '#C2410C', algo: '#7C3AED', clim: '#15803D', mob: '#0E7490', cult: '#BE185D', other: '#64748B' };
     D.themes.forEach(function (t) { T[t.id] = { label: t.label, color: onLight[t.id] || t.color }; });
     P.forEach(function (p) { if (C[p.key]) p.c = C[p.key]; });
-    var pre = P.filter(function (p) { return p.pre; }).length;
-    document.getElementById('summary').insertBefore(document.createTextNode(P.length + ' papers, ' + pre + ' of them preprints. '), document.getElementById('summary').firstChild);
     var f = document.getElementById('filters');
     function chip(label, color, id) {
       var b = document.createElement('button'); b.type = 'button'; if (id) b.dataset.theme = id;

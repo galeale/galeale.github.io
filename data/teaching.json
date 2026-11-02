@@ -6,6 +6,6 @@
   {"course": "Data, Information and Society: Hands-on Training", "programme": "International College", "institution": "Ca’ Foscari University of Venice", "role": "Course coordinator", "hours": 30, "years": ["2024/25", "2025/26"]},
   {"course": "Social Media Analysis and Persuasion Detection", "programme": "Doctoral School", "institution": "Polish-Japanese Academy of Information Technology", "role": "Co-coordinator", "hours": 10, "years": ["2025/26"]},
   {"course": "Advanced Topics in Computer Science", "programme": "", "institution": "University of Padova", "role": "Lecturer", "hours": 4, "years": ["2024/25"]},
-  {"course": "Operating Systems (Sistemi Operativi)", "programme": "B.Sc. in Computer Science", "institution": "University of Padova", "role": "Lecturer", "hours": 30, "years": ["2023/24", "2024/25"]},
+  {"course": "Operating Systems (Sistemi Operativi)", "programme": "B.Sc. in Computer Science", "institution": "University of Padova", "role": "Lecturer", "hours": 30, "years": ["2023/24", "2024/25", "2025/26"]},
   {"course": "Social Network Analysis", "programme": "B.Sc. in Computer Science", "institution": "Ca’ Foscari University of Venice", "role": "Student tutor", "hours": null, "years": ["2022/23"]}
 ]

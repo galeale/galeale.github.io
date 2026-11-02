@@ -23,11 +23,11 @@ Static site for GitHub Pages: no build step, plain HTML, CSS and JavaScript.
 }
 ```
 
-They appear in the panel that opens when someone clicks a green route on the map. The names of the daily stages are in
-`STAGE_NAMES` in `scripts/build_cycling.py`.
+They appear in the panel that opens when someone clicks a green route on the map. Stage names are worked out by
+`scripts/build_trips.py`; fix any of them in its `OVERRIDES`.
 
 **Citations.** Edit `data/citations.csv` (one row per paper: `key,citations,title`). Leave the number empty if you don't
-want to show one. Node sizes and the publications page update on the next page load.
+want to show one. They size the nodes of the network on the homepage.
 
 **Public engagement.** Add entries to `data/engagement.json`. `group` is `talks`, `press` or `policy`; `url` is optional
 and turns the title into a link. The section and its menu link stay hidden while the list is empty.
@@ -59,19 +59,23 @@ The Strava export and the home location never go in the repository (`private/` i
 3. Run, from the repository root:
 
 ```bash
-pip install fitdecode
+pip install fitdecode numpy opencv-python pillow
+npm install world-atlas@2.0.2 topojson-client@3.1.0 all-the-cities@3.1.0
 python scripts/parse_tracks.py /path/to/strava_export private/tracks.pkl
 python scripts/build_cycling.py private/tracks.pkl data/cycling-data.json
+node scripts/make_geo.js                       # borders, towns near the rides, private/cities1000.json
+python scripts/build_trips.py /path/to/strava_export private/cities1000.json data/cycling-data.json
 python scripts/add_food.py /path/to/strava_export/activities.csv data/cycling-data.json
-pip install numpy opencv-python pillow
 python scripts/make_thumb.py
 ```
 
-Country borders come from Natural Earth (`npm install world-atlas@2.0.2 topojson-client@3.1.0`, then
-`node scripts/make_borders.js data/borders.json`); they only need rebuilding to change the map area.
-
-`add_food.py` also writes `data/cycling-summary.json` (the numbers on the homepage); `make_thumb.py` redraws the
-homepage heatmap image.
+- `build_trips.py` splits the rides to conferences into daily stages (wherever the clock stops for more than 3 hours),
+  names each stage after the nearest town (GeoNames) and adds the elevation profiles. Names it cannot guess go in
+  `OVERRIDES`.
+- `make_geo.js` writes the world outlines (Natural Earth) and `data/places.json`, the towns within about 10 km of a ride;
+  the map shows them by population as you zoom in.
+- `add_food.py` also writes `data/cycling-summary.json` (the numbers on the homepage); `make_thumb.py` redraws the
+  homepage heatmap image.
 
 New conference trips go in `CONF` in `scripts/build_cycling.py` (their ride names must contain "biking"), and their
 EcoPassenger figures in `ECO` in `scripts/add_food.py`.
